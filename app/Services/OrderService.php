@@ -20,7 +20,7 @@ class OrderService
             $order = $this->createOrUpdateOrder($data);
             $this->processItems($order, $data['items']);
             $this->finalizeOrder($order, $data);
-            
+
             return $order->load(['items.menuItem', 'payment', 'diningTable']);
         });
     }
@@ -45,7 +45,7 @@ class OrderService
         }
 
         return Order::create(array_merge($attributes, [
-            'order_no' => 'ORD-' . strtoupper(uniqid()),
+            'order_no' => SystemHelper::generateOrderNo(),
             'user_id' => auth()->id() ?? 1,
             'status' => 'pending',
         ]));
@@ -58,7 +58,7 @@ class OrderService
     {
         $menuItemIds = collect($items)->pluck('menu_item_id')->unique();
         $menuItems = MenuItem::whereIn('id', $menuItemIds)->get()->keyBy('id');
-        
+
         $total = 0;
         $itemsToInsert = [];
 
@@ -83,10 +83,10 @@ class OrderService
         }
 
         OrderItem::insert($itemsToInsert);
-        
+
         $taxRate = (float) SystemHelper::getSetting('tax_percentage', 10) / 100;
         $tax = $total * $taxRate;
-        
+
         $order->update([
             'subtotal' => $total,
             'tax' => $tax,
@@ -116,7 +116,7 @@ class OrderService
             );
 
             $order->update(['status' => 'completed']);
-            
+
             if ($order->order_type === 'dine_in' && $order->table_id) {
                 Table::where('id', $order->table_id)->update(['status' => 'available']);
             }

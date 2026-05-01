@@ -108,7 +108,7 @@ class OrderController extends Controller
         $existingOrder = $order->load('items.menuItem');
         $initialCart = $this->mapOrderToCart($existingOrder);
         
-        return view('admin.orders.edit', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
+        return view('admin.orders.checkout', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
     }
 
     /**

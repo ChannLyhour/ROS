@@ -17,6 +17,7 @@ use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\CurrencyController;
 use App\Http\Controllers\admin\TranslationController;
 use App\Http\Controllers\admin\SearchController;
+use App\Http\Controllers\admin\BackupController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Log;
 
@@ -45,7 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Admin only
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['role:administrator'])->group(function () {
         Route::resource('menu', MenuItemController::class);
         Route::resource('categories', CategoryController::class);
         Route::resource('users', UserController::class);
@@ -67,18 +68,24 @@ Route::middleware(['auth'])->group(function () {
 
         // Dynamic Search
         Route::get('search', [SearchController::class, 'search'])->name('admin.search');
+
+        // Backups
+        Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('backups', [BackupController::class, 'create'])->name('backups.create');
+        Route::get('backups/download', [BackupController::class, 'download'])->name('backups.download');
+        Route::delete('backups', [BackupController::class, 'destroy'])->name('backups.destroy');
     });
 
     // Admin, Cashier and Kitchen
-    Route::middleware(['role:admin,cashier,kitchen'])->group(function () {
+    Route::middleware(['role:administrator,cashier,kitchen'])->group(function () {
         // Kitchen KDS
         Route::get('kitchen', [KitchenController::class, 'index'])->name('kitchen.index');
         Route::post('kitchen/order/{order}/note', [KitchenController::class, 'updateNote'])->name('kitchen.update-note');
         Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
     });
 
-    // Admin and Cashier
-    Route::middleware(['role:admin,cashier'])->group(function () {
+    Route::middleware(['role:administrator,cashier'])->group(function () {
+        Route::get('pos', [OrderController::class, 'create'])->name('pos.index');
         Route::resource('orders', OrderController::class);
         Route::resource('tables', TableController::class);
         Route::resource('payments', PaymentController::class)->only(['index', 'show']);

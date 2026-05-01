@@ -24,6 +24,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'role-management' => ['view-roles', 'create-roles', 'edit-roles', 'delete-roles'],
             'reports-management' => ['view-reports'],
             'settings' => ['manage-settings', 'manage-translations'],
+            
         ];
 
         foreach ($permissions as $group => $names) {

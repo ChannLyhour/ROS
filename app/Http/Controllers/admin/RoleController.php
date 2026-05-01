@@ -81,7 +81,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        if ($role->users_count > 0) {
+        if ($role->users()->count() > 0) {
             return redirect()->back()->with('error', 'Cannot delete role that has active users!');
         }
 

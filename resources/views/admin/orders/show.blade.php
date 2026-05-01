@@ -232,43 +232,46 @@
 </div>
 
 <!-- Payment Modal -->
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-lg">
             <div class="modal-header border-0 p-4 pb-0">
-                <h5 class="fw-black mb-0">{{ __('Complete Checkout') }}</h5>
+                <h5 class="fw-black mb-0 d-flex align-items-center gap-2">
+                    <i data-lucide="shield-check" class="text-success"></i>
+                    {{ __('Complete Checkout') }}
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <div class="h1 fw-black text-primary mb-1">${{ number_format($order->total_amount, 2) }}</div>
+                <div class="h1 fw-black text-primary mb-1">{{ $appSettings['currency'] }}{{ number_format($order->total_amount, 2) }}</div>
                 <p class="text-muted extra-small fw-bold text-uppercase mb-4">{{ __('Total amount due') }}</p>
 
                 <div class="payment-methods row g-3 mb-4">
                     <div class="col-4">
                         <input type="radio" class="btn-check" name="pay_method" id="pay_cash" value="cash" checked>
-                        <label class="btn btn-payment-option w-100 py-3" for="pay_cash">
+                        <label class="btn btn-premium-toggle w-100 py-3" for="pay_cash">
                             <i data-lucide="banknote" class="mb-2"></i>
                             <span>{{ __('Cash') }}</span>
                         </label>
                     </div>
                     <div class="col-4">
                         <input type="radio" class="btn-check" name="pay_method" id="pay_card" value="card">
-                        <label class="btn btn-payment-option w-100 py-3" for="pay_card">
+                        <label class="btn btn-premium-toggle w-100 py-3" for="pay_card">
                             <i data-lucide="credit-card" class="mb-2"></i>
                             <span>{{ __('Card') }}</span>
                         </label>
                     </div>
                     <div class="col-4">
                         <input type="radio" class="btn-check" name="pay_method" id="pay_qr" value="qr">
-                        <label class="btn btn-payment-option w-100 py-3" for="pay_qr">
+                        <label class="btn btn-premium-toggle w-100 py-3" for="pay_qr">
                             <i data-lucide="qr-code" class="mb-2"></i>
                             <span>{{ __('QR Pay') }}</span>
                         </label>
                     </div>
                 </div>
 
-                <div class="mb-3 text-start">
-                    <label class="info-label mb-2">{{ __('Internal Order Notes') }} :</label>
+                <div class="mb-4 text-start">
+                    <label class="info-label mb-2">{{ __('Internal Order Notes') }}</label>
                     <textarea id="orderNotes" class="form-control premium-field" rows="2" placeholder="{{ __('Special requests, allergies, etc.') }}">{{ $order->notes }}</textarea>
                 </div>
 
@@ -278,18 +281,19 @@
                         <div class="col-6">
                             <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block text-start">{{ __('Amount Paid') }}</label>
                             <div class="input-group premium-group shadow-sm">
-                                <span class="input-group-text bg-white border-end-0 py-1 px-2">$</span>
-                                <input type="number" id="cashReceived" class="form-control premium-field border-start-0 py-1" step="0.01" placeholder="0.00" oninput="calculateChange()">
+                                <span class="input-group-text bg-white border-end-0 py-1 px-2 text-muted fw-bold">{{ $appSettings['currency'] }}</span>
+                                <input type="number" id="cashReceived" class="form-control premium-field border-start-0 py-1 fw-bold" step="0.01" placeholder="0.00" oninput="calculateChange()">
                             </div>
                         </div>
                         <div class="col-6 text-end">
                             <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">{{ __('Change Due') }}</label>
-                            <div class="h4 fw-black mb-0 text-success" id="changeAmount">$0.00</div>
+                            <div class="h4 fw-black mb-0 text-success" id="changeAmount">{{ $appSettings['currency'] }}0.00</div>
                         </div>
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-orange w-100 py-3 fw-bold rounded-lg" onclick="processFinalPayment()">
+                <button type="button" class="btn btn-success btn-finalize-checkout w-100 py-3 fw-bold rounded-lg shadow-md hover-lift transform-active" onclick="processFinalPayment()">
+                    <i data-lucide="check-circle" class="me-2"></i>
                     {{ __('FINALIZE TRANSACTION') }}
                 </button>
             </div>
@@ -529,19 +533,17 @@
 @push('js')
 <script>
     function calculateChange() {
-        const total = {
-            {
-                $order - > total_amount
-            }
-        };
+        const total = {{ $order->total_amount }};
         const paid = parseFloat(document.getElementById('cashReceived').value) || 0;
         const change = paid - total;
         const changeDisplay = document.getElementById('changeAmount');
+        const currency = "{{ $appSettings['currency'] }}";
+
         if (change >= 0) {
-            changeDisplay.innerText = `$${change.toFixed(2)}`;
+            changeDisplay.innerText = `${currency}${change.toFixed(2)}`;
             changeDisplay.className = 'h4 fw-black mb-0 text-success';
         } else {
-            changeDisplay.innerText = `$${Math.abs(change).toFixed(2)}`;
+            changeDisplay.innerText = `${currency}${Math.abs(change).toFixed(2)}`;
             changeDisplay.className = 'h4 fw-black mb-0 text-danger';
         }
     }
@@ -567,11 +569,7 @@
 
         const data = {
             payment_method: payMethod,
-            paid_amount: parseFloat(document.getElementById('cashReceived').value) || {
-                {
-                    $order - > total_amount
-                }
-            },
+            paid_amount: parseFloat(document.getElementById('cashReceived').value) || {{ $order->total_amount }},
             notes: document.getElementById('orderNotes').value,
             _token: "{{ csrf_token() }}"
         };

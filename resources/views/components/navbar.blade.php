@@ -1,10 +1,24 @@
 <header class="admin-navbar shadow-sm">
+    @php
+        $isPos = request()->routeIs('pos.index') || request()->routeIs('orders.create') || request()->routeIs('orders.edit');
+    @endphp
+
     <div class="navbar-left d-flex align-items-center gap-2">
+        @if(!$isPos)
         <button id="sidebarToggle" class="navbar-toggle" title="{{ __('Toggle Sidebar') }}">
             <i data-lucide="menu"></i>
         </button>
+        @endif
+        
+        @if($isPos)
+        <a href="{{ route('home') }}" class="btn btn-light border rounded-pill px-4 fw-bold d-flex align-items-center gap-2 shadow-sm animate__animated animate__fadeInLeft" style="height: 40px; font-size: 0.85rem;">
+            <i data-lucide="layout-dashboard" style="width: 18px;" class="text-primary"></i>
+            <span>{{ __('Dashboard') }}</span>
+        </a>
+        @endif
 
         <!-- Global Search Trigger -->
+        @if(!$isPos)
         <button class="nav-search-btn d-none d-lg-flex align-items-center justify-content-between" 
                 data-bs-toggle="modal" 
                 data-bs-target="#commandSearchModal"
@@ -17,11 +31,12 @@
                 <span class="opacity-75">Ctrl</span> K
             </kbd>
         </button>
+        @endif
     </div>
 
     <div class="navbar-right d-flex align-items-center gap-3">
-        @if(auth()->user()->role && in_array(auth()->user()->role->slug, ['admin', 'cashier']))
-        <a href="{{ route('orders.create') }}" class="pos-create-btn">
+        @if(!$isPos && auth()->user()->role && in_array(auth()->user()->role->slug, ['administrator', 'cashier']))
+        <a href="{{ route('pos.index') }}" class="pos-create-btn animate__animated animate__pulse animate__infinite">
             <i data-lucide="plus-circle"></i>
             <span>POS</span>
         </a>

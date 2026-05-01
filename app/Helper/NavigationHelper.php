@@ -137,6 +137,13 @@ class NavigationHelper
                         'visible' => $user->can('manage-settings'),
                     ],
                     [
+                        'label' => 'Backups',
+                        'route' => 'backups.index',
+                        'icon' => 'database',
+                        'activePattern' => 'backups.*',
+                        'visible' => $user->can('manage-settings'),
+                    ],
+                    [
                         'label' => 'Logout',
                         'route' => 'logout',
                         'icon' => 'log-out',

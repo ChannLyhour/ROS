@@ -31,10 +31,15 @@
         @guest
         @yield('content')
         @else
-        <div class="admin-layout" id="adminLayout">
+        @php
+            $isPos = request()->routeIs('pos.index') || request()->routeIs('orders.create') || request()->routeIs('orders.edit');
+        @endphp
+        <div class="admin-layout {{ $isPos ? 'hide-sidebar' : '' }}" id="adminLayout">
             <div class="sidebar-overlay" id="sidebarOverlay"></div>
+            @if(!$isPos)
             <x-sidebar />
-            <main class="main-content">
+            @endif
+            <main class="main-content {{ $isPos ? 'ms-0 w-100' : '' }}">
                 <x-navbar />
                 <div class="content-wrapper">
                     @yield('content')

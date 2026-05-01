@@ -15,6 +15,7 @@
         "laravel/tinker": "^3.0",
         "laravel/ui": "*",
         "maatwebsite/excel": "*",
+        "spatie/laravel-backup": "*",
         "spatie/laravel-permission": "*"
     },
     "require-dev": {

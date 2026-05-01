@@ -39,6 +39,30 @@
         min-width: 320px;
     }
 
+    @media (max-width: 768px) {
+        .header-actions {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+            gap: 15px;
+        }
+
+        .search-container {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .btn-premium-lg {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .master-table-container .justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+    }
+
     .custom-input-group {
         display: flex;
         align-items: center;

@@ -23,12 +23,12 @@
             <p class="mb-2 extra-small text-dark fw-black text-uppercase">{{ $role->description ?? 'No specific description provided.' }}</p>
             <div class="d-flex flex-wrap gap-1">
                 @forelse($role->permissions->take(5) as $permission)
-                    <span class="badge bg-light text-muted border py-1 px-2 fw-bold" style="font-size: 0.55rem;">{{ strtoupper($permission->name) }}</span>
+                <span class="badge bg-light text-muted border py-1 px-2 fw-bold" style="font-size: 0.55rem;">{{ strtoupper($permission->name) }}</span>
                 @empty
-                    <span class="text-muted extra-small italic">No permissions assigned</span>
+                <span class="text-muted extra-small italic">No permissions assigned</span>
                 @endforelse
                 @if($role->permissions->count() > 5)
-                    <span class="badge bg-primary-subtle text-primary py-1 px-2 fw-bold" style="font-size: 0.55rem;">+{{ $role->permissions->count() - 5 }} MORE</span>
+                <span class="badge bg-primary-subtle text-primary py-1 px-2 fw-bold" style="font-size: 0.55rem;">+{{ $role->permissions->count() - 5 }} MORE</span>
                 @endif
             </div>
         </td>
@@ -42,10 +42,9 @@
         <td class="text-end pe-4">
             <x-table-actions
                 :editRoute="route('roles.edit', $role->id)"
-                :deleteRoute="route('roles.destroy', $role->id)" 
+                :deleteRoute="route('roles.destroy', $role->id)"
                 :id="$role->id"
-                :name="$role->name"
-            />
+                :name="$role->name" />
         </td>
 
 
@@ -53,4 +52,40 @@
     </tr>
     @endforeach
 </x-master-table>
+
+<style>
+    .fw-black {
+        font-weight: 900 !important;
+    }
+
+    .extra-small {
+        font-size: 0.65rem;
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+
+    .badge {
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    tr:hover td {
+        background-color: rgba(240, 137, 19, 0.02) !important;
+    }
+
+    .badge-light {
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+
+    .badge-primary-subtle {
+        background: rgba(240, 137, 19, 0.1);
+        color: #f08913;
+        border: 1px solid rgba(240, 137, 19, 0.2);
+    }
+</style>
 @endsection

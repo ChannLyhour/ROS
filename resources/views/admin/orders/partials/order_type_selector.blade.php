@@ -3,20 +3,20 @@
     <div class="d-flex gap-2">
         <input type="radio" class="btn-check" name="orderType" id="dine_in" value="dine_in"
             {{ ($existingOrder && $existingOrder->order_type == 'dine_in') || (!$existingOrder) ? 'checked' : '' }} onchange="toggleTable()">
-        <label class="btn btn-premium-toggle flex-grow-1" for="dine_in">
-            <i data-lucide="utensils"></i> Dine In
+        <label class="btn btn-premium-toggle flex-grow-1 py-2" for="dine_in">
+            Dine In
         </label>
 
         <input type="radio" class="btn-check" name="orderType" id="takeaway" value="takeaway"
             {{ $existingOrder && $existingOrder->order_type == 'takeaway' ? 'checked' : '' }} onchange="toggleTable()">
-        <label class="btn btn-premium-toggle flex-grow-1" for="takeaway">
-            <i data-lucide="shopping-bag"></i> Takeaway
+        <label class="btn btn-premium-toggle flex-grow-1 py-2" for="takeaway">
+            Takeaway
         </label>
 
         <input type="radio" class="btn-check" name="orderType" id="delivery" value="delivery"
             {{ $existingOrder && $existingOrder->order_type == 'delivery' ? 'checked' : '' }} onchange="toggleTable()">
-        <label class="btn btn-premium-toggle flex-grow-1" for="delivery">
-            <i data-lucide="truck"></i> Delivery
+        <label class="btn btn-premium-toggle flex-grow-1 py-2" for="delivery">
+            Delivery
         </label>
     </div>
 </div>

@@ -111,11 +111,14 @@
     </div>
 
     <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-lg">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-black">Complete Checkout</h5>
+                    <h5 class="modal-title fw-black d-flex align-items-center gap-2">
+                        <i data-lucide="shield-check" class="text-success"></i>
+                        Complete Checkout
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -125,31 +128,31 @@
 
                     <div class="payment-methods row g-2 mb-4">
                         <div class="col-4">
-                            <input type="radio" class="btn-check" name="pay_method" id="pay_cash" checked>
-                            <label class="btn btn-outline-primary w-100 py-3" for="pay_cash">
+                            <input type="radio" class="btn-check" name="pay_method" id="pay_cash" value="cash" checked>
+                            <label class="btn btn-premium-toggle w-100 py-3" for="pay_cash">
                                 <i data-lucide="banknote" class="d-block mb-1 mx-auto"></i>
                                 <span class="small fw-bold">Cash</span>
                             </label>
                         </div>
                         <div class="col-4">
-                            <input type="radio" class="btn-check" name="pay_method" id="pay_card">
-                            <label class="btn btn-outline-primary w-100 py-3" for="pay_card">
+                            <input type="radio" class="btn-check" name="pay_method" id="pay_card" value="card">
+                            <label class="btn btn-premium-toggle w-100 py-3" for="pay_card">
                                 <i data-lucide="credit-card" class="d-block mb-1 mx-auto"></i>
                                 <span class="small fw-bold">Card</span>
                             </label>
                         </div>
                         <div class="col-4">
-                            <input type="radio" class="btn-check" name="pay_method" id="pay_qr">
-                            <label class="btn btn-outline-primary w-100 py-3" for="pay_qr">
+                            <input type="radio" class="btn-check" name="pay_method" id="pay_qr" value="qr">
+                            <label class="btn btn-premium-toggle w-100 py-3" for="pay_qr">
                                 <i data-lucide="qr-code" class="d-block mb-1 mx-auto"></i>
                                 <span class="small fw-bold">QR Pay</span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="info-label mb-2">Internal Order Notes :</label>
-                        <textarea id="orderNotes" class="form-control premium-field" rows="2" placeholder="Special requests, allergies, etc."></textarea>
+                    <div class="mb-4">
+                        <label class="info-label mb-2">Internal Order Notes</label>
+                        <textarea id="orderNotes" class="form-control premium-field" rows="2" placeholder="Special requests, allergies, or delivery instructions..."></textarea>
                     </div>
 
                     <!-- Cash Payment Calculator -->
@@ -159,25 +162,25 @@
                                 <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Amount Paid</label>
                                 <div class="input-group premium-group shadow-sm">
                                     <span class="input-group-text bg-white border-end-0 py-1 px-2 fw-bold text-muted">{{ $appSettings['currency'] }}</span>
-                                    <input type="number" id="cashReceived" class="form-control premium-field border-start-0 py-1" step="0.01" placeholder="0.00" oninput="calculateChange()">
+                                    <input type="number" id="cashReceived" class="form-control premium-field border-start-0 py-1 fw-bold" step="0.01" placeholder="0.00" oninput="calculateChange()">
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-6 text-end">
                                 <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Change Due</label>
                                 <div class="h4 fw-black mb-0 text-success" id="changeAmount">{{ $appSettings['currency'] }}0.00</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-6">
-                            <button type="button" class="btn btn-warning w-100 py-3 fw-bold rounded-lg border shadow-sm" onclick="processPayment(false)">
-                                <i data-lucide="clock" class="me-2" style="width: 18px;"></i> SAVE (PAY LATER)
+                            <button type="button" class="btn btn-white border w-100 py-3 fw-bold rounded-lg shadow-sm hover-lift transform-active" onclick="processPayment(false)">
+                                <i data-lucide="clock" class="me-2 text-warning" style="width: 18px;"></i> PAY LATER
                             </button>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-lg" onclick="processPayment(true)">
-                                <i data-lucide="check" class="me-2" style="width: 18px;"></i> PAY NOW
+                            <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-lg shadow-md hover-lift transform-active" onclick="processPayment(true)">
+                                <i data-lucide="check-circle" class="me-2" style="width: 18px;"></i> PAY NOW
                             </button>
                         </div>
                     </div>
@@ -188,7 +191,6 @@
 </div>
 
 <style>
-
     .pos-container {
         height: calc(100vh - 80px);
     }
@@ -451,7 +453,9 @@
 
 @push('js')
 <script>
-    let cart = {!! json_encode($initialCart) !!};
+    let cart = {
+        !!json_encode($initialCart) !!
+    };
     const taxRate = parseFloat("{{ $appSettings['tax_percentage'] }}") / 100;
     const currency = "{{ $appSettings['currency'] }}";
     const exchangeRate = parseFloat("{{ $appSettings['exchange_rate'] }}") || 4100;
@@ -680,7 +684,7 @@
      */
     const POS = {
         isProcessing: false,
-        btnSelector: '.btn-orange[onclick*="processPayment"]',
+        btnSelector: '[onclick*="processPayment"]',
 
         async request(endpoint, payload) {
             if (this.isProcessing) return;
@@ -726,13 +730,13 @@
         handleError(error) {
             console.error('POS API Error:', error);
             let message = 'An unexpected error occurred.';
-            
+
             if (error.errors) {
                 message = Object.values(error.errors).flat().join('\n');
             } else if (error.message) {
                 message = error.message;
             }
-            
+
             alert(message);
         }
     };
@@ -755,7 +759,7 @@
         }
 
         const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'cash';
-        
+
         const payload = {
             order_id: "{{ $existingOrder->id ?? '' }}",
             order_type: type,
@@ -795,7 +799,9 @@
         // If we have an existing order from backend, prioritize it over localStorage
         @if(isset($existingOrder) && $existingOrder)
         if (document.getElementById('orderNotes')) {
-            document.getElementById('orderNotes').value = {!! json_encode($existingOrder->notes ?? '') !!};
+            document.getElementById('orderNotes').value = {
+                !!json_encode($existingOrder - > notes ?? '') !!
+            };
         }
         if (document.getElementById('tableId')) {
             document.getElementById('tableId').value = "{{ $existingOrder->table_id ?? '' }}";

@@ -61,4 +61,30 @@ class SystemHelper
         }
         return asset('favicon.ico');
     }
+
+    /**
+     * Generate a sequential order number in the format: ORD-YYYYMMDD-0001
+     *
+     * @return string
+     */
+    public static function generateOrderNo()
+    {
+        $prefix = 'ORD-';
+        $date = date('Ymd');
+        $pattern = $prefix . $date . '-%';
+
+        $latestOrder = \App\Models\Order::where('order_no', 'like', $pattern)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($latestOrder) {
+            $parts = explode('-', $latestOrder->order_no);
+            $lastSequence = (int) end($parts);
+            $newSequence = str_pad($lastSequence + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newSequence = '0001';
+        }
+
+        return $prefix . $date . '-' . $newSequence;
+    }
 }
