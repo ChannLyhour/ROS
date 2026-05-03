@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Helper\SystemHelper;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        // Implicitly grant "admin" role all permissions
+        // This works with $user->can() checks
+        Gate::before(function ($user, $ability) {
+            return $user->role && $user->role->slug === 'admin' ? true : null;
+        });
 
         View::composer('*', function ($view) {
             $view->with('appSettings', [

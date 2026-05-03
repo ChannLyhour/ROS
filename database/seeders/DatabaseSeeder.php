@@ -37,6 +37,16 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        User::updateOrCreate(
+            ['email' => 'admin2@ros.com'],
+            [
+                'name' => 'Admin 2',
+                'password' => bcrypt('password'),
+                'role_id' => $adminRole->id,
+                'state' => 'Active'
+            ]
+        );
+
         // Categories & Menu Items
         $this->call([
             CategorySeeder::class,
