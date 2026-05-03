@@ -15,19 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Roles
-        $adminRole = \App\Models\Role::firstOrCreate(
-            ['slug' => 'administrator'],
-            ['name' => 'Administrator', 'description' => 'System Administrator']
-        );
+        // 1. Roles & Permissions (Spatie)
+        $this->call(RolesAndPermissionsSeeder::class);
 
-        $cashierRole = \App\Models\Role::firstOrCreate(
-            ['slug' => 'cashier'],
-            ['name' => 'Cashier', 'description' => 'Front desk staff']
-        );
+        // 2. Categories & Menu Items
+        $this->call([
+            CategorySeeder::class,
+            MenuItemSeeder::class,
+        ]);
 
-        // Users
-        User::updateOrCreate(
+        // 3. Get Roles for User assignment
+        $adminRole = \App\Models\Role::where('slug', 'administrator')->first();
+        $cashierRole = \App\Models\Role::where('slug', 'cashier')->first();
+
+        // 4. Users
+        $admin = User::updateOrCreate(
             ['email' => 'admin@ros.com'],
             [
                 'name' => 'Admin Staff',
@@ -36,8 +38,9 @@ class DatabaseSeeder extends Seeder
                 'state' => 'Active'
             ]
         );
+        $admin->assignRole('Administrator');
 
-        User::updateOrCreate(
+        $admin2 = User::updateOrCreate(
             ['email' => 'admin2@ros.com'],
             [
                 'name' => 'Admin 2',
@@ -46,13 +49,11 @@ class DatabaseSeeder extends Seeder
                 'state' => 'Active'
             ]
         );
+        $admin2->assignRole('Administrator');
 
-        // Categories & Menu Items
+        // Other seeders
         $this->call([
-            CategorySeeder::class,
-            MenuItemSeeder::class,
-            RolesAndPermissionsSeeder::class,
-            translationSeeder::class,
+            TranslationSeeder::class,
         ]);
 
         // Tables
@@ -76,8 +77,5 @@ class DatabaseSeeder extends Seeder
         foreach ($settings as $key => $value) {
             \App\Models\Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
-
-        // Translations
-        $this->call(TranslationSeeder::class);
     }
 }

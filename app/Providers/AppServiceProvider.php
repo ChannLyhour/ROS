@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         // Implicitly grant "admin" role all permissions
         // This works with $user->can() checks
         Gate::before(function ($user, $ability) {
-            return $user->role && $user->role->slug === 'admin' ? true : null;
+            return $user->role && $user->role->slug === 'administrator' ? true : null;
         });
 
         View::composer('*', function ($view) {
