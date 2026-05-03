@@ -41,7 +41,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // 1. Administrator: Has everything
         $admin = Role::firstOrCreate(
             ['name' => 'Administrator', 'guard_name' => 'web'],
-            ['slug' => 'administrator', 'description' => 'Full Administrative System Access']
+            ['slug' => 'administrator', 'description' => 'Full Administrative System Access'],
         );
         $admin->syncPermissions(Permission::all());
 

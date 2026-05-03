@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
     {
         // Roles
         $adminRole = \App\Models\Role::firstOrCreate(
-            ['slug' => 'admin'],
-            ['name' => 'Admin', 'description' => 'System Administrator']
+            ['slug' => 'administrator'],
+            ['name' => 'Administrator', 'description' => 'System Administrator']
         );
 
         $cashierRole = \App\Models\Role::firstOrCreate(
