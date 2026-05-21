@@ -9,7 +9,7 @@
     :createRoute="route('categories.create')" 
     createLabel="{{ __('Add Category') }}" 
     searchPlaceholder="{{ __('Search category name...') }}" 
-    :headers="[__('#'), __('Category Details'), __('Item Count'), __('Status'), __('Actions')],imageField='icon'," 
+    :headers="[__('#'), __('Category Details'), __('Item Count'), __('Status'), __('Actions')]" 
     :items="$categories"
 >
     @forelse($categories as $category)
