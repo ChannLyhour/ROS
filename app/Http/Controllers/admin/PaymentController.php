@@ -49,6 +49,8 @@ class PaymentController extends Controller
         $request->validate([
             'payment_method' => 'required|in:cash,card,qr,khqr',
             'paid_amount' => 'required|numeric|min:' . $order->total_amount,
+            'payer_name' => 'nullable|string|max:255',
+            'payer_account' => 'nullable|string|max:255',
         ]);
 
         $change = $request->paid_amount - $order->total_amount;
@@ -59,6 +61,8 @@ class PaymentController extends Controller
             'paid_amount' => $request->paid_amount,
             'change_amount' => $change,
             'status' => 'paid',
+            'payer_name' => $request->payer_name,
+            'payer_account' => $request->payer_account,
             'paid_at' => now(),
         ]);
 
@@ -77,9 +81,23 @@ class PaymentController extends Controller
     }
 
     /**
-     * Get receipt view with autoprint.
+     * Get receipt view with autoprint - new professional receipt.
      */
     public function receipt(Order $order)
+    {
+        $payment = $order->payment;
+        if (!$payment) {
+            return redirect()->back()->with('error', 'No payment found for this order.');
+        }
+
+        $payment->load(['order.items.menuItem', 'order.customer', 'order.diningTable', 'order.user']);
+        return view('admin.receipts.invoice', compact('payment'));
+    }
+
+    /**
+     * Get legacy receipt view (dashboard version).
+     */
+    public function legacyReceipt(Order $order)
     {
         $payment = $order->payment;
         if (!$payment) {

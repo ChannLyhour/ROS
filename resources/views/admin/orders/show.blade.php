@@ -216,6 +216,14 @@
                             <small class="text-muted fw-bold extra-small">{{ $order->payment->paid_at->format('M d, h:i A') }}</small>
                             @endif
                         </div>
+                        @if($order->payment->payer_name || $order->payment->payer_account)
+                        <div class="mt-2 extra-small fw-bold text-muted">
+                            {{ __('Paid by') }} {{ $order->payment->payer_name ?? __('Mobile account') }}
+                            @if($order->payment->payer_account)
+                                <span class="ms-1">({{ $order->payment->payer_account }})</span>
+                            @endif
+                        </div>
+                        @endif
                         @else
                         <div class="mt-4 p-3 bg-light rounded-lg border border-dashed text-center">
                             <span class="text-muted extra-small fw-black text-uppercase tracking-wider">
@@ -273,6 +281,12 @@
                 <div class="mb-4 text-start">
                     <label class="info-label mb-2">{{ __('Internal Order Notes') }}</label>
                     <textarea id="orderNotes" class="form-control premium-field" rows="2" placeholder="{{ __('Special requests, allergies, etc.') }}">{{ $order->notes }}</textarea>
+                </div>
+
+                <div id="qrPayerFields" class="p-3 bg-light rounded-lg border mb-4 text-start d-none">
+                    <label class="info-label mb-2">{{ __('Mobile Payment Info') }}</label>
+                    <input type="text" id="payerName" class="form-control premium-field mb-2" placeholder="{{ __('Customer account name') }}">
+                    <input type="text" id="payerAccount" class="form-control premium-field" placeholder="{{ __('Phone number or account id') }}">
                 </div>
 
                 <!-- Cash Payment Calculator -->
@@ -552,8 +566,12 @@
     document.querySelectorAll('input[name="pay_method"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const calc = document.getElementById('cashCalculator');
+            const qrFields = document.getElementById('qrPayerFields');
             if (this.id === 'pay_cash') calc.classList.remove('d-none');
             else calc.classList.add('d-none');
+
+            if (this.id === 'pay_qr') qrFields.classList.remove('d-none');
+            else qrFields.classList.add('d-none');
         });
     });
 
@@ -571,6 +589,8 @@
             payment_method: payMethod,
             paid_amount: parseFloat(document.getElementById('cashReceived').value) || {{ $order->total_amount }},
             notes: document.getElementById('orderNotes').value,
+            payer_name: payMethod === 'qr' ? document.getElementById('payerName')?.value.trim() : null,
+            payer_account: payMethod === 'qr' ? document.getElementById('payerAccount')?.value.trim() : null,
             _token: "{{ csrf_token() }}"
         };
 
@@ -585,6 +605,10 @@
             });
 
             if (response.ok) {
+                if (payMethod === 'qr') {
+                    const payer = data.payer_name || 'mobile account';
+                    alert(`Payment received by ${payer}.`);
+                }
                 window.location.reload();
             } else {
                 const err = await response.json();

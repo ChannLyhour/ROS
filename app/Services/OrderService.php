@@ -111,6 +111,8 @@ class OrderService
                     'paid_amount' => $paid,
                     'change_amount' => $change,
                     'status' => 'paid',
+                    'payer_name' => $data['payer_name'] ?? null,
+                    'payer_account' => $data['payer_account'] ?? null,
                     'paid_at' => now(),
                 ]
             );

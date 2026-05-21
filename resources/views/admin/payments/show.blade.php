@@ -141,6 +141,18 @@
                             <span class="fw-bold">{{ $payment->order->user->name ?? __('System') }}</span>
                         </div>
                     </div>
+                    @if($payment->payer_name || $payment->payer_account)
+                    <div class="p-3 mt-3 bg-success-subtle text-success rounded-lg border border-success border-opacity-25 d-flex align-items-center gap-3">
+                        <i data-lucide="smartphone" style="width: 20px;"></i>
+                        <div>
+                            <small class="d-block extra-small text-uppercase fw-black">{{ __('Paid By') }}</small>
+                            <span class="fw-bold">{{ $payment->payer_name ?? __('Mobile account') }}</span>
+                            @if($payment->payer_account)
+                                <small class="d-block text-muted">{{ $payment->payer_account }}</small>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
 

@@ -29,6 +29,8 @@ class StoreOrderRequest extends FormRequest
             'items.*.quantity' => 'required|integer|min:1',
             'payment_method' => 'nullable|in:cash,card,qr,khqr',
             'paid_amount' => 'nullable|numeric',
+            'payer_name' => 'nullable|string|max:255',
+            'payer_account' => 'nullable|string|max:255',
             'notes' => 'nullable|string'
         ];
     }

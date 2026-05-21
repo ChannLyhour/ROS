@@ -8,7 +8,8 @@ class Payment extends Model
 {
     protected $fillable = [
         'order_id', 'payment_method', 'total_amount', 'paid_amount', 'change_amount', 
-        'status', 'khqr_md5', 'khqr_string', 'khqr_transaction_id', 'khqr_expires_at', 'paid_at'
+        'status', 'payer_name', 'payer_account', 'khqr_md5', 'khqr_string',
+        'khqr_transaction_id', 'khqr_expires_at', 'paid_at'
     ];
 
     protected $casts = [

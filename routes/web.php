@@ -40,6 +40,9 @@ Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('qr-code', function () {
+        return view('admin.qr');
+    })->name('qr.code');
 
     // Profile Management (All Users)
     Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');

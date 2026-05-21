@@ -131,25 +131,48 @@
 
                 <div class="payment-methods row g-2 mb-4">
                     <div class="col-4">
-                        <input type="radio" class="btn-check" name="pay_method" id="pay_cash" checked>
+                        <input type="radio" class="btn-check" name="pay_method" id="pay_cash" value="cash" checked>
                         <label class="btn btn-outline-primary w-100 py-3" for="pay_cash">
                             <i data-lucide="banknote" class="d-block mb-1 mx-auto"></i>
                             <span class="small fw-bold">Cash</span>
                         </label>
                     </div>
                     <div class="col-4">
-                        <input type="radio" class="btn-check" name="pay_method" id="pay_card">
+                        <input type="radio" class="btn-check" name="pay_method" id="pay_card" value="card">
                         <label class="btn btn-outline-primary w-100 py-3" for="pay_card">
                             <i data-lucide="credit-card" class="d-block mb-1 mx-auto"></i>
                             <span class="small fw-bold">Card</span>
                         </label>
                     </div>
                     <div class="col-4">
-                        <input type="radio" class="btn-check" name="pay_method" id="pay_qr">
+                        <input type="radio" class="btn-check" name="pay_method" id="pay_qr" value="qr">
                         <label class="btn btn-outline-primary w-100 py-3" for="pay_qr">
                             <i data-lucide="qr-code" class="d-block mb-1 mx-auto"></i>
                             <span class="small fw-bold">QR Pay</span>
                         </label>
+                    </div>
+                </div>
+
+                <div id="qrPaymentInfo" class="p-3 bg-light rounded-lg border mb-4 d-none">
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2">QR Pay Instructions</h6>
+                        <p class="small text-muted mb-0">Scan the QR code below with your mobile wallet, then enter the payer name shown on the phone receipt.</p>
+                    </div>
+                    <div class="text-center mb-3">
+                        <img src="{{ asset('images/myqr.jpg') }}" alt="QR Code" class="img-fluid" style="max-width: 240px;">
+                    </div>
+                    <div class="text-center">
+                        <a href="{{ asset('images/myqr.jpg') }}" target="_blank" class="btn btn-outline-secondary btn-sm">Open QR in new tab</a>
+                    </div>
+                    <div class="row g-2 mt-3">
+                        <div class="col-12">
+                            <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Paid By</label>
+                            <input type="text" id="payerName" class="form-control premium-field" placeholder="Customer account name">
+                        </div>
+                        <div class="col-12">
+                            <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Account / Phone</label>
+                            <input type="text" id="payerAccount" class="form-control premium-field" placeholder="Phone number or account id">
+                        </div>
                     </div>
                 </div>
 
@@ -846,14 +869,20 @@
         }
     }
 
-    // Toggle Calculator based on method
+    // Toggle payment UI based on selected method
     document.querySelectorAll('input[name="pay_method"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const calc = document.getElementById('cashCalculator');
+            const qrInfo = document.getElementById('qrPaymentInfo');
             if (this.id === 'pay_cash') {
                 calc.classList.remove('d-none');
+                qrInfo.classList.add('d-none');
+            } else if (this.id === 'pay_qr') {
+                calc.classList.add('d-none');
+                qrInfo.classList.remove('d-none');
             } else {
                 calc.classList.add('d-none');
+                qrInfo.classList.add('d-none');
             }
         });
     });
@@ -954,6 +983,14 @@
 
         const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'cash';
 
+        if (isPaid && payMethod === 'qr') {
+            const payerName = document.getElementById('payerName')?.value.trim();
+            const confirmed = confirm(`QR Pay selected.${payerName ? ` Paid by ${payerName}.` : ''} Click OK once the phone payment is completed.`);
+            if (!confirmed) {
+                return;
+            }
+        }
+
         const payload = {
             order_id: {!! json_encode($existingOrder->id ?? null) !!},
             order_type: type,
@@ -964,13 +1001,19 @@
                 quantity: i.qty
             })),
             payment_method: isPaid ? payMethod : null,
-            paid_amount: isPaid ? (parseFloat(document.getElementById('cashReceived')?.value) || 0) : 0
+            paid_amount: isPaid ? (payMethod === 'qr' ? window.currentTotalUSD || 0 : (parseFloat(document.getElementById('cashReceived')?.value) || 0)) : 0,
+            payer_name: isPaid && payMethod === 'qr' ? document.getElementById('payerName')?.value.trim() : null,
+            payer_account: isPaid && payMethod === 'qr' ? document.getElementById('payerAccount')?.value.trim() : null
         };
 
         try {
             const result = await POS.request('/api/v1/orders', payload);
             if (result.success) {
                 localStorage.removeItem('pos_cart');
+                if (isPaid && payMethod === 'qr') {
+                    const payer = payload.payer_name || 'mobile account';
+                    alert(`Payment received by ${payer}.`);
+                }
                 window.location.href = "{{ route('orders.index') }}";
             }
         } catch (e) {

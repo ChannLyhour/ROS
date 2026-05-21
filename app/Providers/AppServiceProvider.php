@@ -23,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Load response helpers
+        require_once app_path('Helper/ResponseHelper.php');
+
         Paginator::useBootstrapFive();
 
         // Implicitly grant "admin" role all permissions
