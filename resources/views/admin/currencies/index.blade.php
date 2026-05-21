@@ -10,7 +10,13 @@
     createPermission="manage-settings"
     createLabel="{{ __('Add Currency') }}"
     searchPlaceholder="{{ __('Search by name or symbol...') }}"
-    :headers="[__('#'), __('Name'), __('Symbol'), __('Status'), __('Actions')]"
+    :headers="[
+        ['text' => __('#'), 'align' => 'center'],
+        ['text' => __('Name'), 'align' => 'ps-3'],
+        ['text' => __('Symbol'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$currencies">
 
     @forelse($currencies as $currency)

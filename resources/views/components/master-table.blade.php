@@ -193,7 +193,11 @@
 
     /* Kill the laravel default nav "showing x to y" duplicate */
     .mst-footer .pagination-links nav > div:first-child,
-    .mst-footer .pagination-links .text-sm { display: none !important; }
+    .mst-footer .pagination-links .text-sm,
+    .mst-footer .pagination-links p.small,
+    .mst-footer .pagination-links .d-sm-none { display: none !important; }
+    
+    .mst-footer .pagination-links nav > div.d-none.d-sm-flex > div:first-child { display: none !important; }
 
     /* ── Responsive ──────────────────────────────── */
     @media (max-width: 768px) {
@@ -253,11 +257,45 @@
                         @foreach($headers as $header)
                         @php
                             $alignClass = '';
-                            if (in_array($header, ['#', 'Category', 'Price', 'Status', 'Items', 'Symbol'])) $alignClass = 'text-center';
-                            if ($header === 'Actions') $alignClass = 'text-end pe-4';
-                            if ($header === 'Image') $alignClass = 'ps-4';
+                            $headerText = '';
+                            if (is_array($header)) {
+                                $headerText = $header['text'] ?? '';
+                                $align = $header['align'] ?? '';
+                                if ($align === 'center') {
+                                    $alignClass = 'text-center';
+                                } elseif ($align === 'end' || $align === 'right') {
+                                    $alignClass = 'text-end pe-4';
+                                } elseif ($align === 'start' || $align === 'left') {
+                                    $alignClass = 'text-start';
+                                } else {
+                                    $alignClass = $align;
+                                }
+                            } else {
+                                $headerText = $header;
+                                $cleanHeader = strtolower(trim(strip_tags($header)));
+                                
+                                // Support matching for standard English and translation values
+                                $centerOptions = ['#', 'category', 'price', 'status', 'items', 'symbol', 'role', 'type', 'amount', 'date', 'created by', 'created_by'];
+                                $isCenter = false;
+                                foreach ($centerOptions as $opt) {
+                                    if ($cleanHeader === $opt || $cleanHeader === strtolower(trim(__($opt)))) {
+                                        $isCenter = true;
+                                        break;
+                                    }
+                                }
+
+                                if ($isCenter) {
+                                    $alignClass = 'text-center';
+                                }
+                                if ($cleanHeader === 'actions' || $cleanHeader === strtolower(trim(__('Actions')))) {
+                                    $alignClass = 'text-end pe-4';
+                                }
+                                if ($cleanHeader === 'image' || $cleanHeader === strtolower(trim(__('Image')))) {
+                                    $alignClass = 'ps-4';
+                                }
+                            }
                         @endphp
-                        <th class="{{ $alignClass }}">{{ $header }}</th>
+                        <th class="{{ $alignClass }}">{!! is_array($header) ? $headerText : e($headerText) !!}</th>
                         @endforeach
                     </tr>
                 </thead>
@@ -273,14 +311,14 @@
             <div class="mst-pagination-info">
                 Showing
                 <strong>{{ $items->firstItem() ?? 0 }}</strong>
-                –
+                -
                 <strong>{{ $items->lastItem() ?? 0 }}</strong>
                 of
                 <strong>{{ $items->total() }}</strong>
                 results
             </div>
             <div class="pagination-links">
-                {{ $items->appends(request()->query())->links() }}
+                {{ $items->appends(request()->query())->links('pagination::bootstrap-5') }}
             </div>
         </div>
         @endif

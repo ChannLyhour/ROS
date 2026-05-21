@@ -10,7 +10,14 @@
     createPermission="create-users"
     createLabel="{{ __('Add Staff') }}"
     searchPlaceholder="{{ __('Search by name or email...') }}"
-    :headers="['#', __('Staff'), __('Phone'), __('Role'), __('Status'), __('Actions')]"
+    :headers="[
+        ['text' => '#', 'align' => 'center'],
+        ['text' => __('Staff'), 'align' => 'ps-3'],
+        ['text' => __('Phone'), 'align' => 'start'],
+        ['text' => __('Role'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$users">
 
     <x-slot name="filters">

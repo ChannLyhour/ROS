@@ -186,7 +186,7 @@
             const notesTextarea = document.getElementById('ppOrderNotes');
             if (notesTextarea) {
                 @if(isset($existingOrder) && $existingOrder)
-                    notesTextarea.value = storageNotes || {!! json_encode($existingOrder->notes ?? '') !!};
+                    notesTextarea.value = storageNotes || @js($existingOrder->notes ?? '');
                 @else
                     notesTextarea.value = storageNotes;
                 @endif
@@ -211,13 +211,13 @@
         const POS = {
             isProcessing: false,
             
-            async request(endpoint, payload) {
+            async request(endpoint, payload, method = 'POST') {
                 if (this.isProcessing) return;
                 this.setLoading(true);
 
                 try {
                     const response = await fetch(endpoint, {
-                        method: 'POST',
+                        method: method,
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
@@ -286,30 +286,54 @@
             const payMethod = document.querySelector('input[name="pp_pay_method"]:checked')?.value || 'cash';
 
             if (isPaid && payMethod === 'qr') {
-                const payerName = document.getElementById('ppPayerName')?.value.trim();
                 const confirmed = confirm("{{ __('QR Pay selected. Click OK once mobile transaction is complete.') }}");
                 if (!confirmed) {
                     return;
                 }
             }
 
+            // Filter out cart items with missing/invalid menu_item_id and cast to int
+            const validItems = window.cart
+                .filter(i => i && i.id && parseInt(i.id) > 0)
+                .map(i => ({
+                    menu_item_id: parseInt(i.id),
+                    quantity: parseInt(i.qty) || 1
+                }));
+
+            if (validItems.length === 0) {
+                if (window.showToast) {
+                    showToast("{{ __('No valid items in cart. Please re-add your items.') }}", 'error');
+                } else {
+                    alert("{{ __('No valid items in cart. Please re-add your items.') }}");
+                }
+                return;
+            }
+
+            const existingOrderId = orderId ? parseInt(orderId) : null;
+
             const payload = {
-                order_id: orderId ? parseInt(orderId) : null,
+                order_id: existingOrderId,
                 order_type: orderType,
                 table_id: tableId ? parseInt(tableId) : null,
                 notes: document.getElementById('ppOrderNotes')?.value || '',
-                items: window.cart.map(i => ({
-                    menu_item_id: i.id,
-                    quantity: i.qty
-                })),
+                items: validItems,
                 payment_method: isPaid ? payMethod : null,
                 paid_amount: isPaid ? (payMethod === 'qr' ? window.ppCurrentTotalUSD || 0 : (parseFloat(document.getElementById('ppCashReceived')?.value) || 0)) : 0,
                 payer_name: isPaid && payMethod === 'qr' ? document.getElementById('ppPayerName')?.value.trim() : null,
                 payer_account: isPaid && payMethod === 'qr' ? document.getElementById('ppPayerAccount')?.value.trim() : null
             };
 
+            // Route to update if editing an existing order, otherwise store
+            const endpoint = existingOrderId
+                ? "{{ route('orders.update', ':id') }}".replace(':id', existingOrderId)
+                : "{{ route('orders.store') }}";
+            const httpMethod = existingOrderId ? 'PUT' : 'POST';
+
+            // Remove stale _method override (not needed for real PUT)
+            delete payload._method;
+
             try {
-                const result = await POS.request("{{ route('orders.store') }}", payload);
+                const result = await POS.request(endpoint, payload, httpMethod);
                 if (result.success) {
                     localStorage.removeItem('pos_cart');
                     if (window.showToast) {

@@ -10,7 +10,14 @@
     createPermission="create-customers"
     createLabel="{{ __('Add Customer') }}"
     searchPlaceholder="{{ __('Search name, email or phone...') }}"
-    :headers="[__('#'), __('Customer'), __('Email'), __('Phone'), __('Location'), __('Actions')]"
+    :headers="[
+        ['text' => __('#'), 'align' => 'center'],
+        ['text' => __('Customer'), 'align' => 'ps-3'],
+        ['text' => __('Email'), 'align' => 'start'],
+        ['text' => __('Phone'), 'align' => 'center'],
+        ['text' => __('Location'), 'align' => 'start'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$customers">
 
     @forelse($customers as $customer)

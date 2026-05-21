@@ -54,7 +54,17 @@ class OrderController extends Controller
      */
     public function create(Request $request)
     {
-        $menuItems = MenuItem::where('status', 'available')->get();
+        $query = MenuItem::where('status', 'available');
+        
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $menuItems = $query->paginate(16);
         $tables = Table::where('status', 'available')->get();
         $customers = Customer::all();
         $categories = Category::all();
@@ -68,8 +78,13 @@ class OrderController extends Controller
         }
 
         $initialCart = $this->mapOrderToCart($existingOrder);
+        $appSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
 
-        return view('admin.orders.checkout', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
+        if ($request->ajax()) {
+            return view('admin.orders.partials.menu_grid', compact('menuItems', 'appSettings'))->render();
+        }
+
+        return view('admin.orders.checkout', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart', 'appSettings'));
     }
 
     /**
@@ -125,17 +140,32 @@ class OrderController extends Controller
     /**
      * Show the form for editing the specified order.
      */
-    public function edit(Order $order)
+    public function edit(Request $request, Order $order)
     {
+        $query = MenuItem::with('category')->where('status', 'available');
+
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $menuItems = $query->paginate(16);
         $categories = Category::all();
-        $menuItems = MenuItem::with('category')->get();
         $tables = Table::all();
         $customers = Customer::all();
 
         $existingOrder = $order->load('items.menuItem');
         $initialCart = $this->mapOrderToCart($existingOrder);
+        $appSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
 
-        return view('admin.orders.edit', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
+        if ($request->ajax()) {
+            return view('admin.orders.partials.menu_grid', compact('menuItems', 'appSettings'))->render();
+        }
+
+        return view('admin.orders.edit', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart', 'appSettings'));
     }
 
     /**

@@ -10,7 +10,14 @@
     createPermission="manage-translations"
     createLabel="{{ __('Add Translation') }}"
     searchPlaceholder="{{ __('Search by key or text...') }}"
-    :headers="['#', __('Group'), __('Key'), __('English'), __('Khmer'), __('Actions')]"
+    :headers="[
+        ['text' => '#', 'align' => 'center'],
+        ['text' => __('Group'), 'align' => 'center'],
+        ['text' => __('Key'), 'align' => 'ps-3'],
+        ['text' => __('English'), 'align' => 'start'],
+        ['text' => __('Khmer'), 'align' => 'start'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$translations">
 
     @forelse($translations as $item)

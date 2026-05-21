@@ -59,7 +59,13 @@
     createPermission="create-menu"
     createLabel="{{ __('Add Category') }}"
     searchPlaceholder="{{ __('Search category name...') }}"
-    :headers="[__('#'), __('Category'), __('Items'), __('Status'), __('Actions')]"
+    :headers="[
+        ['text' => __('#'), 'align' => 'center'],
+        ['text' => __('Category'), 'align' => 'ps-3'],
+        ['text' => __('Items'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$categories">
 
     @forelse($categories as $category)

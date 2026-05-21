@@ -10,7 +10,15 @@
     createPermission="create-menu"
     createLabel="{{ __('Add Item') }}"
     searchPlaceholder="{{ __('Search by name or description...') }}"
-    :headers="[__('#'), __('Image'), __('Name'), __('Category'), __('Price'), __('Status'), __('Actions')]"
+    :headers="[
+        ['text' => __('#'), 'align' => 'center'],
+        ['text' => __('Image'), 'align' => 'ps-3'],
+        ['text' => __('Name'), 'align' => 'start'],
+        ['text' => __('Category'), 'align' => 'center'],
+        ['text' => __('Price'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$menuItems">
 
     <x-slot name="filters">

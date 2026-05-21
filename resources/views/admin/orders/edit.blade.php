@@ -47,11 +47,11 @@
 
                     <div class="mt-3 pt-2 border-top bg-white z-index-10 w-100">
                         <div class="d-flex gap-2 overflow-auto hide-scrollbar pb-3 px-1">
-                            <button class="btn btn-category active" data-category="all">
+                            <button class="btn btn-category {{ request('category', 'all') === 'all' ? 'active' : '' }}" data-category="all">
                                 <i data-lucide="layout-grid" class="me-2" style="width: 14px;"></i> {{ __('All Items') }}
                             </button>
                             @foreach($categories as $cat)
-                            <button class="btn btn-category shadow-sm" data-category="{{ $cat->id }}">
+                            <button class="btn btn-category shadow-sm {{ request('category') == $cat->id ? 'active' : '' }}" data-category="{{ $cat->id }}">
                                 {{ $cat->name }}
                             </button>
                             @endforeach
@@ -59,29 +59,9 @@
                     </div>
                 </div>
 
-                <!-- Menu Grid -->
-                <div class="flex-grow-1 overflow-auto p-4">
-                    <div class="row g-4" id="menuGrid">
-                        @forelse($menuItems as $item)
-                        <div class="col-xl-3 col-lg-4 col-md-6 menu-item-card" data-id="{{ $item->id }}" data-category="{{ $item->category_id }}" data-name="{{ strtolower($item->name) }}">
-                            <div class="card h-100 border-0 shadow-sm rounded-lg overflow-hidden item-interactive" data-item="{{ json_encode($item) }}" onclick="addToCart(this)">
-                                <div class="position-relative">
-                                    <img src="{{ $item->display_image }}" class="card-img-top" style="height: 160px; object-fit: cover;" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
-                                    <div class="price-pill">{{ $appSettings['currency'] }}{{ number_format($item->price, 2) }}</div>
-                                </div>
-                                <div class="card-body p-3">
-                                    <h6 class="fw-bold text-dark mb-1 text-truncate">{{ $item->name }}</h6>
-                                    <p class="extra-small text-muted mb-0">{{ $item->category->name }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="col-12 text-center py-5">
-                            <i data-lucide="frown" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
-                            <p class="text-muted">No items available in the menu.</p>
-                        </div>
-                        @endforelse
-                    </div>
+                <!-- Menu Grid Area (AJAX Updatable) -->
+                <div id="menuGridArea" class="d-flex flex-column flex-grow-1 overflow-hidden">
+                    @include('admin.orders.partials.menu_grid')
                 </div>
             </div>
 
@@ -260,54 +240,93 @@
 
 @push('js')
 <script>
-    let cart = {!! json_encode($initialCart) !!};
+    let cart = @js($initialCart);
     const taxRate = parseFloat("{{ $appSettings['tax_percentage'] }}") / 100;
     const currency = "{{ $appSettings['currency'] }}";
     const exchangeRate = parseFloat("{{ $appSettings['exchange_rate'] }}") || 4100;
 
+    // AJAX Fetch Menu
+    function fetchMenu(urlStr) {
+        document.getElementById('menuGridArea').style.opacity = '0.5';
+        
+        fetch(urlStr, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('menuGridArea').innerHTML = html;
+            document.getElementById('menuGridArea').style.opacity = '1';
+            
+            bindPaginationLinks();
+            if (window.lucide) lucide.createIcons();
+            
+            // Update URL without page reload
+            window.history.pushState({}, '', urlStr);
+        })
+        .catch(err => {
+            console.error('Failed to fetch menu:', err);
+            document.getElementById('menuGridArea').style.opacity = '1';
+        });
+    }
+
+    function bindPaginationLinks() {
+        document.querySelectorAll('.pos-pagination a.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchMenu(this.href);
+            });
+        });
+    }
+
     // Filter Logic
     function filterByCategory(catId) {
+        // Update active styling
         document.querySelectorAll('.btn-category').forEach(btn => {
-            if (btn.dataset.category == catId || (catId === 'all' && btn.dataset.category === 'all')) {
-                btn.click();
-                btn.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
-                });
+            if(btn.dataset.category == catId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
             }
         });
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('category', catId);
+        url.searchParams.set('page', 1);
+        fetchMenu(url.toString());
     }
     window.filterByCategory = filterByCategory;
 
     document.querySelectorAll('.btn-category').forEach(btn => {
         btn.addEventListener('click', function() {
-            document.querySelector('.btn-category.active').classList.remove('active');
-            this.classList.add('active');
-            const cat = this.dataset.category;
-
-            document.querySelectorAll('.menu-item-card').forEach(card => {
-                if (cat === 'all' || card.dataset.category === cat) {
-                    card.classList.remove('d-none');
-                } else {
-                    card.classList.add('d-none');
-                }
-            });
+            filterByCategory(this.dataset.category);
         });
     });
 
     // Search Logic
     const menuSearch = document.getElementById('menuSearch');
     if (menuSearch) {
-        menuSearch.addEventListener('input', function() {
-            const term = this.value.toLowerCase();
-            document.querySelectorAll('.menu-item-card').forEach(card => {
-                if (card.dataset.name.includes(term)) {
-                    card.classList.remove('d-none');
+        menuSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const term = this.value;
+                const url = new URL(window.location.href);
+                if (term) {
+                    url.searchParams.set('search', term);
                 } else {
-                    card.classList.add('d-none');
+                    url.searchParams.delete('search');
                 }
-            });
+                url.searchParams.set('page', 1);
+                fetchMenu(url.toString());
+                
+                // Close modal if it's open
+                const modalEl = document.getElementById('commandSearchModal');
+                if (modalEl && typeof bootstrap !== 'undefined') {
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                }
+            }
         });
     }
 
@@ -462,7 +481,7 @@
         saveCartToStorage();
 
         // Redirect to pos/checkout page
-        const orderId = {!! json_encode($existingOrder->id ?? null) !!};
+        const orderId = @js($existingOrder->id ?? null);
         let url = "{{ route('pos.checkout') }}?type=" + encodeURIComponent(type);
         if (tableId) {
             url += "&table=" + encodeURIComponent(tableId);
@@ -491,7 +510,7 @@
         @if(isset($existingOrder) && $existingOrder)
         const notesEl = document.getElementById('orderNotes');
         if (notesEl) {
-            notesEl.value = {!! json_encode($existingOrder->notes ?? '') !!};
+            notesEl.value = @js($existingOrder->notes ?? '');
         }
         const tableEl = document.getElementById('tableId');
         if (tableEl) {
@@ -554,7 +573,7 @@
             return;
         }
 
-        const orderId = {!! json_encode($existingOrder->id ?? null) !!};
+        const orderId = @js($existingOrder->id ?? null);
         const url = orderId ? "{{ route('orders.update', ':id') }}".replace(':id', orderId) : "{{ route('orders.store') }}";
         const method = orderId ? 'PUT' : 'POST';
 
@@ -643,6 +662,7 @@
         loadCartFromStorage();
         renderCart();
         toggleTable();
+        bindPaginationLinks();
 
         // Re-initialize Select2 if needed
         if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {

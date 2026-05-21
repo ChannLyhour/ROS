@@ -129,7 +129,13 @@
     title="{{ __('Transaction Ledger') }}"
     subtitle="{{ __('All filtered transactions') }}"
     searchPlaceholder="{{ __('Search ledgers...') }}"
-    :headers="[__('Date/Time'), __('Order #'), __('Customer'), __('Method'), __('Amount')]"
+    :headers="[
+        ['text' => __('Date/Time'), 'align' => 'start'],
+        ['text' => __('Order #'), 'align' => 'start'],
+        ['text' => __('Customer'), 'align' => 'start'],
+        ['text' => __('Method'), 'align' => 'start'],
+        ['text' => __('Amount'), 'align' => 'end']
+    ]"
     :items="$payments">
     @forelse($payments as $payment)
     <tr>

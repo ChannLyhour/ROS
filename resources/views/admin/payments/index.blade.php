@@ -9,7 +9,14 @@
     createRoute=""
     createLabel=""
     searchPlaceholder="{{ __('Search order number...') }}"
-    :headers="['#', __('Amount & Date'), __('Order Ref'), __('Method'), __('Status'), __('Actions')]"
+    :headers="[
+        ['text' => '#', 'align' => 'center'],
+        ['text' => __('Amount & Date'), 'align' => 'ps-3'],
+        ['text' => __('Order Ref'), 'align' => 'center'],
+        ['text' => __('Method'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$payments">
 
     @forelse($payments as $payment)

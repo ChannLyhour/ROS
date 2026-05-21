@@ -177,11 +177,7 @@
     }
 
     // Initial load
-    initChart({
-        !!json_encode($mainTrend - > pluck('label')) !!
-    }, {
-        !!json_encode($mainTrend - > pluck('total')) !!
-    });
+    initChart(@js($mainTrend->pluck('label')), @js($mainTrend->pluck('total')));
 
     // Hijack pagination links
     $(document).on('click', '.pagination a', function(e) {

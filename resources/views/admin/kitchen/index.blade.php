@@ -20,7 +20,15 @@
     title="{{ __('Kitchen Display System') }}" 
     subtitle="{{ __('Live Order Preparation Queue') }}"
     searchPlaceholder="{{ __('Search orders...') }}"
-    :headers="['Order No', 'Type', 'Time', 'Items', 'Notes', 'Status', 'Actions']"
+    :headers="[
+        ['text' => __('Order No'), 'align' => 'start'],
+        ['text' => __('Type'), 'align' => 'start'],
+        ['text' => __('Time'), 'align' => 'start'],
+        ['text' => __('Items'), 'align' => 'start'],
+        ['text' => __('Notes'), 'align' => 'start'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$orders">
     
     <x-slot name="filters">

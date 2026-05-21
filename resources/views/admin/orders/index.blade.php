@@ -10,7 +10,16 @@
     createPermission="create-orders"
     createLabel="{{ __('New Order') }}"
     searchPlaceholder="{{ __('Search by Order ID...') }}"
-    :headers="['#', __('Order Details'), __('Type'), __('Amount'), __('Status'), __('Date'), __('Created By'), __('Actions')]"
+    :headers="[
+        ['text' => '#', 'align' => 'center'],
+        ['text' => __('Order Details'), 'align' => 'ps-4'],
+        ['text' => __('Type'), 'align' => 'center'],
+        ['text' => __('Amount'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'start'],
+        ['text' => __('Date'), 'align' => 'center'],
+        ['text' => __('Created By'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$orders">
     <!-- Filter Slot -->
     <x-slot name="filters">
@@ -61,7 +70,7 @@
             ];
             $type = $typeIcons[$order->order_type] ?? ['icon' => 'package', 'label' => 'Other'];
             @endphp
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-light rounded-pill border">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-light rounded-3 border">
                 <i data-lucide="{{ $type['icon'] }}" class="text-muted" style="width: 14px;"></i>
                 <span class="extra-small fw-bold text-uppercase">{{ $type['label'] }}</span>
             </div>
@@ -70,7 +79,7 @@
             <div class="fw-bold text-primary">${{ number_format($order->total_amount, 2) }}</div>
             <small class="extra-small text-muted">{{ $order->items->sum('quantity') }} items</small>
         </td>
-        <td class="text-center">
+        <td class="text-start">
             @php
             $statusConfig = [
                 'pending'   => ['class' => 'status-badge pending', 'icon' => 'clock'],
@@ -81,7 +90,7 @@
             ];
             $config = $statusConfig[$order->status] ?? $statusConfig['pending'];
             @endphp
-            <span class="badge {{ $config['class'] }} px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
+            <span class="badge {{ $config['class'] }} px-2 rounded-3 d-inline-flex align-items-center gap-2">
                 <i data-lucide="{{ $config['icon'] }}" style="width: 14px;"></i>
                 {{ strtoupper($order->status) }}
             </span>
@@ -108,7 +117,7 @@
     </tr>
     @empty
     <tr>
-        <td colspan="7" class="text-center py-5">
+        <td colspan="8" class="text-center py-5">
             <i data-lucide="inbox" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
             <p class="text-muted">{{ __('No orders found.') }}</p>
         </td>

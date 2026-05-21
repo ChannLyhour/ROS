@@ -9,7 +9,13 @@
     :createRoute="route('roles.create')"
     createPermission="create-roles"
     createLabel="{{ __('Create Role') }}"
-    :headers="['#', __('Role'), __('Permissions'), __('Staff'), __('Actions')]"
+    :headers="[
+        ['text' => '#', 'align' => 'center'],
+        ['text' => __('Role'), 'align' => 'ps-3'],
+        ['text' => __('Permissions'), 'align' => 'start'],
+        ['text' => __('Staff'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$roles">
 
     @foreach($roles as $role)

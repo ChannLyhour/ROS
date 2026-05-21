@@ -10,7 +10,13 @@
     createPermission="create-tables"
     createLabel="{{ __('Add Table') }}"
     searchPlaceholder="{{ __('Search by table name...') }}"
-    :headers="['#', __('Table'), __('Capacity'), __('Status'), __('Actions')]"
+    :headers="[
+        ['text' => '#', 'align' => 'center'],
+        ['text' => __('Table'), 'align' => 'ps-3'],
+        ['text' => __('Capacity'), 'align' => 'center'],
+        ['text' => __('Status'), 'align' => 'center'],
+        ['text' => __('Actions'), 'align' => 'end']
+    ]"
     :items="$tables">
 
     <x-slot name="filters">
