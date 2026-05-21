@@ -302,5 +302,8 @@
     "Category deleted successfully!": "Category deleted successfully!",
     "Menu Item created successfully!": "Menu Item created successfully!",
     "Menu Item updated successfully!": "Menu Item updated successfully!",
-    "Menu Item deleted successfully!": "Menu Item deleted successfully!"
+    "Menu Item deleted successfully!": "Menu Item deleted successfully!",
+    "New Transaction": "New Transaction",
+    "Modify Order": "Modify Order",
+    "Back to POS": "Back to POS"
 }

@@ -1,110 +1,145 @@
 @extends('layouts.app')
 
-@section('title', 'My Profile')
+@section('title', __('My Profile'))
 
 @section('content')
-<div class="user-form-page p-3 p-md-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="p-1 p-md-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h2 class="fw-black mb-0 text-dark">Profile</h2>
-            <p class="text-muted small fw-bold mb-0 text-uppercase tracking-wider">Secure and manage your personal credentials</p>
+            <h2 class="fw-semibold mb-0" style="font-size:1.25rem; color:#212529;">{{ __('My Profile') }}</h2>
+            <p class="text-muted small mb-0">{{ __('Manage your personal credentials and contact info') }}</p>
         </div>
-        <a href="{{ route('home') }}" class="btn btn-white border shadow-sm px-4 rounded-lg fw-bold">
-            <i data-lucide="arrow-left" class="me-2" style="width: 18px;"></i> Back to Dashboard
+        <a href="{{ route('home') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
+            <i data-lucide="arrow-left" style="width:15px;"></i>{{ __('Dashboard') }}
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-lg overflow-hidden">
-        <div class="card-body p-4 p-md-5">
+    <div class="card border" style="border-color:#dee2e6 !important; border-radius:6px;">
+        <div class="card-body p-3 p-md-4">
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 <div class="row g-4">
-                    <div class="col-lg-4 text-center border-end">
-                        <div class="p-4">
-                            <label class="info-label mb-3 d-block">System Identity</label>
-                            <div class="image-upload-wrapper mx-auto mb-3" style="width: 180px; height: 180px;">
-                                <img src="{{ $user->display_image }}"
-                                    id="preview" class="rounded-circle shadow-lg border-4 border-white" style="width: 100%; height: 100%; object-fit: cover;">
+                    <!-- Left: Photo -->
+                    <div class="col-lg-3 text-center">
+                        <p class="extra-small text-muted text-uppercase fw-semibold tracking mb-3">{{ __('Profile Photo') }}</p>
+                        <img src="{{ $user->display_image }}" id="preview"
+                             class="rounded-circle border mb-3"
+                             style="width:120px;height:120px;object-fit:cover;border-color:#dee2e6 !important;">
+                        <br>
+                        <input type="file" name="image" id="imageInput" class="d-none" onchange="previewImage(event)">
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3"
+                                onclick="document.getElementById('imageInput').click()">
+                            <i data-lucide="camera" style="width:13px;" class="me-1"></i>
+                            {{ __('Change Photo') }}
+                        </button>
+                        <p class="text-muted mt-2 mb-0" style="font-size:0.72rem;">{{ __('Shown across the admin console') }}</p>
+
+                        <hr class="my-3" style="border-color:#f1f3f5;">
+
+                        <div class="text-start">
+                            <div class="extra-small text-muted text-uppercase fw-semibold tracking mb-1">{{ __('Administrative Role') }}</div>
+                            <div class="d-inline-flex align-items-center gap-2 px-3 py-2 border rounded bg-light" style="border-color:#dee2e6 !important; border-radius:4px;">
+                                <i data-lucide="shield-check" class="text-primary" style="width:14px;"></i>
+                                <span class="fw-semibold small text-dark">{{ $user->role->name ?? 'Administrator' }}</span>
                             </div>
-                            <input type="file" name="image" id="imageInput" class="d-none" onchange="previewImage(event)">
-                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-4" onclick="document.getElementById('imageInput').click()">
-                                <i data-lucide="camera" class="me-2" style="width: 14px;"></i> Update Identity Image
-                            </button>
-                            <p class="extra-small text-muted mt-3">This image will appear across the administrative console.</p>
+                            <p class="text-muted mt-2 mb-0" style="font-size:0.72rem;">{{ __('Roles are managed by system owners') }}</p>
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
-                        <div class="row g-3">
+                    <!-- Right: Fields -->
+                    <div class="col-lg-9">
+                        <!-- Personal Info -->
+                        <p class="extra-small text-muted text-uppercase fw-semibold tracking mb-3">{{ __('Personal Information') }}</p>
+                        <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="info-label mb-2">Login Display Name</label>
-                                <input type="text" name="name" class="form-control premium-field @error('name') is-invalid @enderror"
-                                    placeholder="Enter your name" value="{{ old('name', $user->name) }}" required>
+                                <label class="form-label fw-semibold small text-dark">{{ __('Display Name') }}</label>
+                                <input type="text" name="name"
+                                       class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                       placeholder="{{ __('Enter your name') }}"
+                                       value="{{ old('name', $user->name) }}" required>
                                 @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="info-label mb-2">System Primary Email</label>
-                                <input type="email" name="email" class="form-control premium-field @error('email') is-invalid @enderror"
-                                    placeholder="your@email.com" value="{{ old('email', $user->email) }}" required>
+                                <label class="form-label fw-semibold small text-dark">{{ __('Email Address') }}</label>
+                                <input type="email" name="email"
+                                       class="form-control form-control-sm @error('email') is-invalid @enderror"
+                                       placeholder="{{ __('your@email.com') }}"
+                                       value="{{ old('email', $user->email) }}" required>
                                 @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="info-label mb-2">Emergency Contact Number</label>
-                                <input type="text" name="phone" class="form-control premium-field @error('phone') is-invalid @enderror"
-                                    placeholder="+000 000 000" value="{{ old('phone', $user->phone) }}">
+                                <label class="form-label fw-semibold small text-dark">{{ __('Phone Number') }}</label>
+                                <input type="text" name="phone"
+                                       class="form-control form-control-sm @error('phone') is-invalid @enderror"
+                                       placeholder="{{ __('+000 000 000') }}"
+                                       value="{{ old('phone', $user->phone) }}">
                                 @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="info-label mb-2">Administrative Role</label>
-                                <input type="text" class="form-control premium-field bg-light" value="{{ $user->role->name ?? 'Administrator' }}" readonly disabled>
-                                <small class="text-muted extra-small mt-1 d-block fw-bold">Roles are managed by system owners</small>
-                            </div>
+                        </div>
 
-                            <hr class="my-4">
-                            <h6 class="fw-black text-dark text-uppercase mb-3"><i data-lucide="lock" class="me-2"></i> Security & Authentication</h6>
+                        <hr class="my-3" style="border-color:#f1f3f5;">
 
+                        <!-- Security -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i data-lucide="lock" class="text-primary" style="width:15px;"></i>
+                            <p class="extra-small text-muted text-uppercase fw-semibold tracking mb-0">{{ __('Security & Password') }}</p>
+                        </div>
+                        <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="info-label mb-2">New Security Password</label>
-                                <input type="password" name="password" class="form-control premium-field @error('password') is-invalid @enderror"
-                                    placeholder="Leave blank to keep current">
+                                <label class="form-label fw-semibold small text-dark">{{ __('New Password') }}</label>
+                                <input type="password" name="password"
+                                       class="form-control form-control-sm @error('password') is-invalid @enderror"
+                                       placeholder="{{ __('Leave blank to keep current') }}">
                                 @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="info-label mb-2">Confirm New Password</label>
-                                <input type="password" name="password_confirmation" class="form-control premium-field"
-                                    placeholder="Repeat new password">
+                                <label class="form-label fw-semibold small text-dark">{{ __('Confirm Password') }}</label>
+                                <input type="password" name="password_confirmation"
+                                       class="form-control form-control-sm"
+                                       placeholder="{{ __('Repeat new password') }}">
                             </div>
+                        </div>
 
-                            <hr class="my-4">
-                            <h6 class="fw-black text-dark text-uppercase mb-3"><i data-lucide="map-pin" class="me-2"></i> Location Information</h6>
+                        <hr class="my-3" style="border-color:#f1f3f5;">
 
-                            <div class="col-md-12">
-                                <label class="info-label mb-2">Street Address</label>
-                                <input type="text" name="address" class="form-control premium-field @error('address') is-invalid @enderror"
-                                    placeholder="Enter your street address" value="{{ old('address', $user->address) }}">
+                        <!-- Location -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i data-lucide="map-pin" class="text-primary" style="width:15px;"></i>
+                            <p class="extra-small text-muted text-uppercase fw-semibold tracking mb-0">{{ __('Location') }}</p>
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small text-dark">{{ __('Street Address') }}</label>
+                                <input type="text" name="address"
+                                       class="form-control form-control-sm @error('address') is-invalid @enderror"
+                                       placeholder="{{ __('Enter your street address') }}"
+                                       value="{{ old('address', $user->address) }}">
                                 @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-
                             <div class="col-md-6">
-                                <label class="info-label mb-2">City</label>
-                                <input type="text" name="city" class="form-control premium-field @error('city') is-invalid @enderror"
-                                    placeholder="Enter city" value="{{ old('city', $user->city) }}">
+                                <label class="form-label fw-semibold small text-dark">{{ __('City') }}</label>
+                                <input type="text" name="city"
+                                       class="form-control form-control-sm @error('city') is-invalid @enderror"
+                                       placeholder="{{ __('Enter city') }}"
+                                       value="{{ old('city', $user->city) }}">
                                 @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-
                             <div class="col-md-6">
-                                <label class="info-label mb-2">State / Region</label>
-                                <input type="text" name="state" class="form-control premium-field @error('state') is-invalid @enderror"
-                                    placeholder="Enter state" value="{{ old('state', $user->state) }}">
+                                <label class="form-label fw-semibold small text-dark">{{ __('State / Region') }}</label>
+                                <input type="text" name="state"
+                                       class="form-control form-control-sm @error('state') is-invalid @enderror"
+                                       placeholder="{{ __('Enter state') }}"
+                                       value="{{ old('state', $user->state) }}">
                                 @error('state') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
-                        <div class="mt-5 pt-4 border-top">
-                            <button type="submit" class="btn btn-primary px-5 py-3 fw-black rounded-lg shadow-sm transform-active text-uppercase">
-                                <i data-lucide="shield-check" class="me-2"></i> Save Profile Changes
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2">
+                                <i data-lucide="save" style="width:15px;"></i>
+                                {{ __('Save Changes') }}
                             </button>
                         </div>
                     </div>
@@ -115,52 +150,21 @@
 </div>
 
 <style>
-    .fw-black {
-        font-weight: 900 !important;
-    }
-
-    .info-label {
-        font-weight: 800;
-        font-size: 0.7rem;
-        color: #f08913;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .premium-field {
-        border: 2px solid #f1f5f9;
-        border-radius: 12px;
-        height: 50px;
-        font-weight: 600;
-    }
-
-    .premium-field:focus {
-        border-color: #f08913;
-        box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1);
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #f08913 0%, #d97706 100%);
-        border: none;
-    }
-
-    .extra-small {
-        font-size: 0.75rem;
-    }
-
-    .tracking-wider {
-        letter-spacing: 0.1em;
-    }
+    body { background-color: #f8fafc !important; }
+    .extra-small { font-size: 0.72rem; }
+    .tracking { letter-spacing: 0.05em; }
+    .form-control-sm { border-radius: 4px; border-color: #ced4da; font-size: 0.9rem; }
+    .form-control-sm:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15); }
+    .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }
+    .btn-primary:hover { background-color: #0b5ed7; }
+    .btn-outline-secondary { border-radius: 4px; font-size: 0.875rem; }
 </style>
 
 <script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('preview');
-            output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = () => { document.getElementById('preview').src = reader.result; };
+    reader.readAsDataURL(event.target.files[0]);
+}
 </script>
 @endsection

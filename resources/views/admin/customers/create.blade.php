@@ -1,76 +1,102 @@
 @extends('layouts.app')
 
+@section('title', __('New Customer'))
+
 @section('content')
-<div class="user-form-page p-3 p-md-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="p-1 p-md-3">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h2 class="fw-black mb-0 text-dark">New Customer</h2>
-            <p class="text-muted small fw-bold mb-0 text-uppercase tracking-wider">Create a new client record</p>
+            <h2 class="fw-semibold mb-0" style="font-size: 1.25rem; color: #212529;">{{ __('New Customer') }}</h2>
+            <p class="text-muted small mb-0">{{ __('Create a new client record in your system') }}</p>
         </div>
-        <a href="{{ route('customers.index') }}" class="btn btn-white border shadow-sm px-4 rounded-lg fw-bold">
-            <i data-lucide="arrow-left" class="me-2" style="width: 18px;"></i> Back to List
+        <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
+            <i data-lucide="arrow-left" style="width:15px;"></i>
+            <span class="d-none d-sm-inline">{{ __('Back to List') }}</span>
+            <span class="d-inline d-sm-none">{{ __('Back') }}</span>
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-lg overflow-hidden">
-        <div class="card-body p-4 p-md-5">
+    <!-- Card -->
+    <div class="card border" style="border-color: #dee2e6 !important; border-radius: 6px;">
+        <div class="card-body p-3 p-md-4">
             <form action="{{ route('customers.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
                 <div class="row g-4">
-                    <div class="col-lg-4 text-center border-end">
-                        <div class="p-4">
-                            <label class="info-label mb-3 d-block">Client Photo</label>
-                            <div class="image-upload-wrapper mx-auto mb-3" style="width: 180px; height: 180px;">
-                                <img src="{{ asset('images/placeholder.jpg') }}" 
-                                     id="preview" class="rounded-circle shadow-lg border-4 border-white" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
+
+                    <!-- Left: Photo -->
+                    <div class="col-lg-3 text-center">
+                        <div class="border-bottom border-lg-end pb-3 pb-lg-0 pe-lg-4" style="border-color:#dee2e6 !important;">
+                            <p class="extra-small text-muted text-uppercase fw-semibold tracking mb-3">{{ __('Profile Photo') }}</p>
+                            <img src="{{ asset('images/placeholder.jpg') }}"
+                                 id="preview"
+                                 class="rounded-circle border mb-3"
+                                 style="width:120px; height:120px; object-fit:cover; border-color:#dee2e6 !important;">
+                            <br>
                             <input type="file" name="image" id="imageInput" class="d-none" onchange="previewImage(event)">
-                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-4" onclick="document.getElementById('imageInput').click()">
-                                <i data-lucide="camera" class="me-2" style="width: 14px;"></i> Upload Photo
+                            <button type="button" class="btn btn-outline-secondary btn-sm px-3"
+                                    onclick="document.getElementById('imageInput').click()">
+                                <i data-lucide="camera" style="width:13px;" class="me-1"></i>
+                                {{ __('Upload Photo') }}
                             </button>
-                            <p class="extra-small text-muted mt-3">Upload profile image (Max 2MB)</p>
+                            <p class="text-muted mt-2 mb-0" style="font-size:0.72rem;">{{ __('Max 2MB') }}</p>
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
+                    <!-- Right: Fields -->
+                    <div class="col-lg-9">
+                        <p class="extra-small text-muted text-uppercase fw-semibold tracking mb-3">{{ __('Customer Details') }}</p>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="info-label mb-2">Full Name</label>
-                                <input type="text" name="name" class="form-control premium-field @error('name') is-invalid @enderror" 
-                                       placeholder="Enter customer name" value="{{ old('name') }}" required>
+                                <label class="form-label fw-semibold small text-dark">{{ __('Full Name') }}</label>
+                                <input type="text" name="name"
+                                       class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                       placeholder="{{ __('Enter customer name') }}"
+                                       value="{{ old('name') }}" required>
                                 @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="info-label mb-2">Email Address</label>
-                                <input type="email" name="email" class="form-control premium-field @error('email') is-invalid @enderror" 
-                                       placeholder="customer@email.com" value="{{ old('email') }}">
+                                <label class="form-label fw-semibold small text-dark">{{ __('Email Address') }}</label>
+                                <input type="email" name="email"
+                                       class="form-control form-control-sm @error('email') is-invalid @enderror"
+                                       placeholder="{{ __('customer@email.com') }}"
+                                       value="{{ old('email') }}">
                                 @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="info-label mb-2">Phone Number</label>
-                                <input type="text" name="phone" class="form-control premium-field @error('phone') is-invalid @enderror" 
-                                       placeholder="+000 000 000" value="{{ old('phone') }}">
+                                <label class="form-label fw-semibold small text-dark">{{ __('Phone Number') }}</label>
+                                <input type="text" name="phone"
+                                       class="form-control form-control-sm @error('phone') is-invalid @enderror"
+                                       placeholder="{{ __('+000 000 000') }}"
+                                       value="{{ old('phone') }}">
                                 @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="info-label mb-2">City</label>
-                                <input type="text" name="city" class="form-control premium-field @error('city') is-invalid @enderror" 
-                                       placeholder="Enter city" value="{{ old('city') }}">
+                                <label class="form-label fw-semibold small text-dark">{{ __('City') }}</label>
+                                <input type="text" name="city"
+                                       class="form-control form-control-sm @error('city') is-invalid @enderror"
+                                       placeholder="{{ __('Enter city') }}"
+                                       value="{{ old('city') }}">
                                 @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-12">
-                                <label class="info-label mb-2">Address</label>
-                                <textarea name="address" class="form-control premium-field @error('address') is-invalid @enderror" 
-                                          style="height: 100px; padding-top: 12px;" placeholder="Full residential address">{{ old('address') }}</textarea>
+                                <label class="form-label fw-semibold small text-dark">{{ __('Address') }}</label>
+                                <textarea name="address" rows="3"
+                                          class="form-control form-control-sm @error('address') is-invalid @enderror"
+                                          placeholder="{{ __('Full residential address') }}">{{ old('address') }}</textarea>
                                 @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
-                        <div class="mt-5 pt-4 border-top">
-                            <button type="submit" class="btn btn-primary px-5 py-3 fw-black rounded-lg shadow-sm transform-active text-uppercase">
-                                <i data-lucide="save" class="me-2"></i> Save Customer Record
+                        <div class="d-flex gap-2 pt-3 mt-2 border-top">
+                            <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2">
+                                <i data-lucide="user-plus" style="width:15px;"></i>
+                                {{ __('Create Customer') }}
                             </button>
+                            <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-4 py-2">
+                                <i data-lucide="x" style="width:15px;"></i>
+                                {{ __('Cancel') }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -80,20 +106,24 @@
 </div>
 
 <style>
-    .fw-black { font-weight: 900 !important; }
-    .info-label { font-weight: 800; font-size: 0.7rem; color: #f08913; text-transform: uppercase; letter-spacing: 1px; }
-    .premium-field { border: 2px solid #f1f5f9; border-radius: 12px; height: 50px; font-weight: 600; }
-    .premium-field:focus { border-color: #f08913; box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1); }
-    .btn-primary { background: linear-gradient(135deg, #f08913 0%, #d97706 100%); border: none; }
-    .extra-small { font-size: 0.75rem; }
+    body { background-color: #f8fafc !important; }
+    .extra-small { font-size: 0.72rem; }
+    .tracking { letter-spacing: 0.05em; }
+    .form-control-sm { border-radius: 4px; border-color: #ced4da; font-size: 0.9rem; }
+    .form-control-sm:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15); }
+    .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }
+    .btn-primary:hover { background-color: #0b5ed7; }
+    .btn-outline-secondary { border-radius: 4px; font-size: 0.875rem; }
+    @media (min-width: 992px) {
+        .border-lg-end { border-right: 1px solid #dee2e6 !important; }
+    }
 </style>
 
 <script>
 function previewImage(event) {
-    var reader = new FileReader();
-    reader.onload = function(){
-        var output = document.getElementById('preview');
-        output.src = reader.result;
+    const reader = new FileReader();
+    reader.onload = function () {
+        document.getElementById('preview').src = reader.result;
     };
     reader.readAsDataURL(event.target.files[0]);
 }

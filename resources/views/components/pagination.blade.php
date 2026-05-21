@@ -1,70 +1,62 @@
 @props(['paginator'])
 
 @if($paginator && $paginator instanceof \Illuminate\Pagination\LengthAwarePaginator)
-<div {{ $attributes->merge(['class' => 'pagination-container py-4 d-flex justify-content-between align-items-center']) }}>
-    <div class="pagination-info text-muted small fw-medium">
-        Showing <span class="text-dark fw-bold">{{ $paginator->firstItem() ?? 0 }}</span> 
-        to <span class="text-dark fw-bold">{{ $paginator->lastItem() ?? 0 }}</span> 
-        of <span class="text-dark fw-bold">{{ $paginator->total() }}</span> results
+<div {{ $attributes->merge(['class' => 'pagination-container py-3 d-flex justify-content-between align-items-center']) }}>
+    <div class="pagination-info text-muted small">
+        {{ __('Showing') }}
+        <span class="fw-semibold text-dark">{{ $paginator->firstItem() ?? 0 }}</span>
+        {{ __('to') }}
+        <span class="fw-semibold text-dark">{{ $paginator->lastItem() ?? 0 }}</span>
+        {{ __('of') }}
+        <span class="fw-semibold text-dark">{{ $paginator->total() }}</span>
+        {{ __('results') }}
     </div>
-    
-    
     <div class="pagination-links">
         {{ $paginator->appends(request()->query())->links() }}
     </div>
-    
 </div>
 
 <style>
     .pagination-container .pagination {
         margin: 0 !important;
-        gap: 6px;
-        padding: 5px;
-        background: #fff;
-        border-radius: 12px;
+        gap: 3px;
         display: flex;
     }
-
     .pagination-container .page-item .page-link {
-        border-radius: 10px !important;
-        border: none;
-        width: 38px;
-        height: 38px;
+        border-radius: 4px !important;
+        border: 1px solid #dee2e6;
+        width: 34px;
+        height: 34px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #64748b;
-        font-weight: 700;
+        color: #6c757d;
+        font-weight: 600;
         font-size: 0.85rem;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        background: transparent;
+        background: #fff;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+        padding: 0;
+        line-height: 1;
     }
-
     .pagination-container .page-item.active .page-link {
-        background: linear-gradient(135deg, #ff8c00 0%, #ff5e00 100%) !important;
+        background: #0d6efd !important;
+        border-color: #0d6efd !important;
         color: #fff !important;
-        box-shadow: 0 5px 15px rgba(255, 94, 0, 0.3);
-        transform: scale(1.05);
     }
-
-    .pagination-container .page-item .page-link:hover:not(.active) {
-        background: #fff5eb;
-        color: #ff8c00;
-        transform: translateY(-2px);
+    .pagination-container .page-item .page-link:hover:not([aria-disabled="true"]) {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #0d6efd;
     }
-
-    /* Surgical Strike on redundant summary info */
-    .pagination-links div[class*="flex-1"] > div:first-child {
-        display: none !important;
+    .pagination-container .page-item.disabled .page-link {
+        background: #f8f9fa;
+        color: #adb5bd;
+        border-color: #dee2e6;
     }
-    
-    .pagination-links div[class*="flex-1"] > div:last-child {
-        display: block !important;
-    }
-    
-    /* Fallback for different templates */
-    .pagination-links .small.text-muted,
-    .pagination-links nav > div:first-child {
+    /* Hide the redundant "Showing X to Y of Z results" from Laravel's default paginator */
+    .pagination-links div[class*="flex-1"] > div:first-child,
+    .pagination-links nav > div:first-child,
+    .pagination-links .small.text-muted {
         display: none !important;
     }
 </style>

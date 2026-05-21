@@ -1,102 +1,105 @@
 @extends('layouts.app')
 
+@section('title', __('Menu Item Details'))
+
 @section('content')
-<div class="menu-item-details-page p-1 p-md-3">
-    <!-- Top Header -->
+<div class="p-1 p-md-3">
+    <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div class="flex-grow-1">
-            <h2 class="fw-bold mb-0 responsive-h2" style="color: #1e293b;">{{ __('Menu Item Details') }}</h2>
-            <p class="text-muted small mb-0">{{ __('Viewing information for') }} "{{ $menuItem->name }}"</p>
+        <div>
+            <h2 class="fw-semibold mb-0" style="font-size: 1.25rem; color: #212529;">{{ __('Menu Item Details') }}</h2>
+            <p class="text-muted small mb-0">{{ __('Viewing') }}: <strong>{{ $menuItem->name }}</strong></p>
         </div>
-        <div class="d-flex gap-2 flex-shrink-0">
-            <a href="{{ route('menu.edit', $menuItem->id) }}" class="btn btn-orange px-3 px-sm-4 py-2 d-flex align-items-center gap-2">
-                <i data-lucide="edit-3" style="width: 16px;"></i>
+        <div class="d-flex gap-2">
+            <a href="{{ route('menu.edit', $menuItem->id) }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-3">
+                <i data-lucide="pencil" style="width:15px;"></i>
                 <span class="d-none d-sm-inline">{{ __('Edit Item') }}</span>
-                <span class="d-inline d-sm-none">{{ __('Edit') }}</span>
             </a>
-            <a href="{{ route('menu.index') }}" class="btn btn-white border px-3 px-sm-4 py-2 d-flex align-items-center gap-2">
-                <i data-lucide="arrow-left" style="width: 16px;"></i>
+            <a href="{{ route('menu.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
+                <i data-lucide="arrow-left" style="width:15px;"></i>
                 {{ __('Back') }}
             </a>
         </div>
     </div>
 
-    <!-- Main White Card -->
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-body p-3 p-md-5">
-            <div class="row g-4 g-lg-5">
-                <!-- Left Sidebar Column -->
+    <!-- Card -->
+    <div class="card border" style="border-color: #dee2e6 !important; border-radius: 6px;">
+        <div class="card-body p-3 p-md-4">
+            <div class="row g-4">
+                <!-- Left: Image + Stats -->
                 <div class="col-lg-4">
-                    <div class="image-container mb-4">
-                        <img src="{{ $menuItem->display_image }}" alt="{{ $menuItem->name }}" class="w-100 rounded-lg shadow-sm border responsive-image" style="object-fit: cover;">
-                    </div>
+                    <img src="{{ $menuItem->display_image }}" alt="{{ $menuItem->name }}"
+                         class="w-100 rounded border mb-3"
+                         style="object-fit:cover; height:260px; border-color:#dee2e6 !important;">
 
-                    <!-- Stats List -->
-                    <div class="item-stats-list">
-                        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                            <span class="text-muted fw-bold extra-small text-uppercase">{{ __('Status') }}</span>
-                            <span class="badge-status {{ $menuItem->status == 'available' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
-                                <span class="dot"></span> {{ $menuItem->status == 'available' ? __('Available') : __('Unavailable') }}
-                            </span>
+                    <div class="border rounded p-3" style="border-color: #dee2e6 !important; border-radius: 6px;">
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom mb-2">
+                            <span class="small text-muted fw-semibold">{{ __('Status') }}</span>
+                            @if($menuItem->status == 'available')
+                            <span class="status-badge available"><span class="status-dot"></span> {{ __('Available') }}</span>
+                            @else
+                            <span class="status-badge unavailable"><span class="status-dot"></span> {{ __('Unavailable') }}</span>
+                            @endif
                         </div>
-
-                        <div class="d-flex justify-content-between align-items-center py-3 py-md-4">
-                            <span class="text-muted fw-bold extra-small text-uppercase">{{ __('Price') }}</span>
-                            <span class="price-hero">{{ $appSettings['currency'] }}{{ number_format($menuItem->price, 2) }}</span>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="small text-muted fw-semibold">{{ __('Price') }}</span>
+                            <span class="fw-bold text-dark" style="font-size:1.2rem;">
+                                {{ $appSettings['currency'] }}{{ number_format($menuItem->price, 2) }}
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Information Column -->
+                <!-- Right: Info -->
                 <div class="col-lg-8">
-                    <div class="item-info-header mb-4">
-                        <span class="info-label text-uppercase mb-1 d-block">{{ __('Item Information') }}</span>
-                        <h1 class="fw-bold mb-2 mb-md-4 responsive-title" style="color: #1e293b;">{{ $menuItem->name }}</h1>
-                    </div>
+                    <p class="text-muted extra-small text-uppercase fw-semibold mb-1 tracking">{{ __('Item Information') }}</p>
+                    <h3 class="fw-bold text-dark mb-4" style="font-size: 1.5rem;">{{ $menuItem->name }}</h3>
 
-                    <!-- Row: Category and ID -->
-                    <div class="row g-3 mb-4">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-7">
-                            <label class="info-label mb-2">{{ __('Category') }} :</label>
-                            <div class="card-info-block p-3">
-                                <i data-lucide="tag" class="text-orange" style="width: 18px;"></i>
-                                <span class="fw-bold ms-2">{{ $menuItem->category->name }}</span>
+                            <label class="form-label fw-semibold small text-muted">{{ __('Category') }}</label>
+                            <div class="border rounded px-3 py-2 d-flex align-items-center gap-2 bg-light"
+                                 style="border-color:#dee2e6 !important; border-radius:4px;">
+                                <i data-lucide="tag" class="text-secondary" style="width:15px;"></i>
+                                <span class="fw-semibold small text-dark">{{ $menuItem->category->name }}</span>
                             </div>
                         </div>
                         <div class="col-md-5">
-                            <label class="info-label mb-2">{{ __('Item Reference') }}</label>
-                            <div class="card-info-block p-3">
-                                <span class="fw-bold text-muted fs-4"># {{ $menuItem->id }}</span>
+                            <label class="form-label fw-semibold small text-muted">{{ __('Item Reference') }}</label>
+                            <div class="border rounded px-3 py-2 bg-light"
+                                 style="border-color:#dee2e6 !important; border-radius:4px;">
+                                <span class="fw-bold text-secondary"># {{ $menuItem->id }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Description Block -->
-                    <div class="mb-4 mb-md-5">
-                        <label class="info-label mb-2">{{ __('Description') }} :</label>
-                        <div class="desc-content-box p-3 p-md-4 border rounded-lg shadow-sm text-break" style="word-wrap: break-word; overflow-wrap: break-word;">
-                            {{ $menuItem->description ?: __('No description available for this item.') }}
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-muted">{{ __('Description') }}</label>
+                        <div class="border rounded p-3 bg-light small text-dark"
+                             style="border-color:#dee2e6 !important; border-radius:4px; min-height:80px;">
+                            {{ $menuItem->description ?: __('No description available.') }}
                         </div>
                     </div>
 
-                    <!-- Bottom Metrics Row -->
                     <div class="row g-3">
-                        <div class="col-sm-6 col-md-4">
-                            <div class="metric-block created">
-                                <label>{{ __('Created On') }}</label>
-                                <span>{{ $menuItem->created_at->format('M d, Y') }}</span>
+                        <div class="col-sm-4">
+                            <div class="metric-card created">
+                                <div class="extra-small text-muted tracking text-uppercase fw-semibold mb-1">{{ __('Created') }}</div>
+                                <div class="fw-semibold small text-dark">{{ $menuItem->created_at->format('M d, Y') }}</div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-4">
-                            <div class="metric-block update">
-                                <label>{{ __('Last Update') }}</label>
-                                <span>{{ $menuItem->updated_at->diffForHumans() }}</span>
+                        <div class="col-sm-4">
+                            <div class="metric-card updated">
+                                <div class="extra-small text-muted tracking text-uppercase fw-semibold mb-1">{{ __('Last Updated') }}</div>
+                                <div class="fw-semibold small text-dark">{{ $menuItem->updated_at->diffForHumans() }}</div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <div class="metric-block cat-status">
-                                <label>{{ __('Cat. Status') }}</label>
-                                <span><i data-lucide="check" style="width: 16px;"></i> {{ __('Active') }}</span>
+                        <div class="col-sm-4">
+                            <div class="metric-card status">
+                                <div class="extra-small text-muted tracking text-uppercase fw-semibold mb-1">{{ __('Category Status') }}</div>
+                                <div class="fw-semibold small text-success d-flex align-items-center gap-1">
+                                    <i data-lucide="check" style="width:13px;"></i> {{ __('Active') }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,185 +110,30 @@
 </div>
 
 <style>
-    body {
-        background-color: #fdfaf5 !important;
-    }
+    body { background-color: #f8fafc !important; }
+    .extra-small { font-size: 0.72rem; }
+    .tracking { letter-spacing: 0.05em; }
+    .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }
+    .btn-primary:hover { background-color: #0b5ed7; color: #fff; }
+    .btn-outline-secondary { border-radius: 4px; font-size: 0.875rem; }
 
-    .menu-item-details-page {
-        font-family: 'Kantumruy Pro', sans-serif;
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 600;
     }
+    .status-badge .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .status-badge.available   { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-badge.available .status-dot   { background: #22c55e; }
+    .status-badge.unavailable { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-badge.unavailable .status-dot { background: #ef4444; }
 
-    /* Responsive Font Sizes */
-    .responsive-h2 {
-        font-size: calc(1.3rem + .6vw);
-    }
-
-    .responsive-title {
-        font-size: calc(1.8rem + 1.2vw);
-        line-height: 1.1;
-    }
-
-    .extra-small {
-        font-size: 0.65rem;
-    }
-
-    /* Responsive Image */
-    .responsive-image {
-        height: 350px;
-    }
-
-    @media (max-width: 576px) {
-        .responsive-image {
-            height: 250px;
-        }
-    }
-
-    /* Buttons */
-    .btn-orange {
-        background-color: #f08913;
-        color: #fff;
-        font-weight: 700;
-        border: none;
-        border-radius: 10px;
-        transition: 0.3s;
-    }
-
-    .btn-orange:hover {
-        background-color: #d87b11;
-        color: #fff;
-        transform: translateY(-2px);
-    }
-
-    .btn-white {
-        background-color: #fff;
-        color: #1e293b;
-        font-weight: 700;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        transition: 0.3s;
-    }
-
-    .btn-white:hover {
-        background-color: #f8fafc;
-        transform: translateY(-2px);
-    }
-
-    /* Icons and Labels */
-    .text-orange {
-        color: #f08913;
-    }
-
-    .info-label {
-        font-weight: 800;
-        font-size: 0.7rem;
-        color: #f08913;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    /* Left Side Stats */
-    .badge-status {
-        padding: 6px 14px;
-        border-radius: 50px;
-        font-weight: 800;
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .badge-status .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: currentColor;
-    }
-
-    .price-hero {
-        font-size: calc(1.8rem + 0.5vw);
-        font-weight: 900;
-        color: #10b981;
-        letter-spacing: -1px;
-    }
-
-    /* Info Blocks */
-    .card-info-block {
-        background-color: #f8fbfd;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        border: 1px solid #e2e8f0;
+    .metric-card {
+        padding: 12px 16px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        background: #fff;
         height: 100%;
-        min-height: 55px;
-    }
-
-    .desc-content-box {
-        background-color: #f8fbfd;
-        color: #475569;
-        font-weight: 500;
-        font-size: 0.95rem;
-        min-height: 80px;
-    }
-
-    /* Metric Blocks */
-    .metric-block {
-        padding: 15px 20px;
-        border-radius: 12px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .metric-block label {
-        font-weight: 800;
-        font-size: 0.6rem;
-        text-transform: uppercase;
-        display: block;
-        margin-bottom: 3px;
-    }
-
-    .metric-block span {
-        font-weight: 900;
-        font-size: 1rem;
-        color: #1e293b;
-    }
-
-    .metric-block.created {
-        background-color: #fff9ed;
-    }
-
-    .metric-block.created label {
-        color: #f59e0b;
-    }
-
-    .metric-block.update {
-        background-color: #f0fdf4;
-    }
-
-    .metric-block.update label {
-        color: #22c55e;
-    }
-
-    .metric-block.cat-status {
-        background-color: #f5f3ff;
-    }
-
-    .metric-block.cat-status label {
-        color: #6366f1;
-    }
-
-    .metric-block.cat-status span {
-        color: #10b981;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    @media (max-width: 991px) {
-        .card-body {
-            padding: 1.5rem !important;
-        }
     }
 </style>
 @endsection

@@ -1,92 +1,92 @@
 @extends('layouts.app')
 
+@section('title', __('New Currency'))
+
 @section('content')
-<div class="menu-create-page p-1 p-md-3">
-    <!-- Sophisticated Header -->
+<div class="p-1 p-md-3">
+    <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div class="flex-grow-1">
-            <h2 class="fw-bold mb-0 responsive-h2" style="color: #1e293b;">New Currency Symbol</h2>
-            <p class="text-muted small mb-0">Defining a new financial token for your platform's transactions</p>
+        <div>
+            <h2 class="fw-semibold mb-0" style="font-size: 1.25rem; color: #212529;">{{ __('New Currency') }}</h2>
+            <p class="text-muted small mb-0">{{ __('Define a new financial symbol for your platform') }}</p>
         </div>
-        <div class="d-flex gap-2 flex-shrink-0">
-            <a href="{{ route('currencies.index') }}" class="btn btn-white border px-3 px-sm-4 py-2 d-flex align-items-center gap-2">
-                <i data-lucide="arrow-left" style="width: 16px;"></i>
-                <span class="d-none d-sm-inline">Back to List</span>
-                <span class="d-inline d-sm-none">Back</span>
-            </a>
-        </div>
+        <a href="{{ route('currencies.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
+            <i data-lucide="arrow-left" style="width:15px;"></i>
+            <span class="d-none d-sm-inline">{{ __('Back to List') }}</span>
+            <span class="d-inline d-sm-none">{{ __('Back') }}</span>
+        </a>
     </div>
 
-    <!-- Main White Card -->
-    <div class="card border-0 shadow-sm rounded-lg overflow-hidden">
-        <div class="card-body p-3 p-md-5">
+    <!-- Card -->
+    <div class="card border" style="border-color: #dee2e6 !important; border-radius: 6px;">
+        <div class="card-body p-3 p-md-4">
             <form action="{{ route('currencies.store') }}" method="POST">
                 @csrf
-                <div class="row g-4 g-lg-5">
-                    <!-- Left Sidebar Column -->
-                    <div class="col-lg-4">
-                        <div class="item-info-header mb-3">
-                            <span class="info-label text-uppercase mb-1 d-block">Status & Visibility</span>
+                <div class="row g-4">
+
+                    <!-- Left: Form Fields -->
+                    <div class="col-lg-8">
+                        <p class="text-muted extra-small text-uppercase fw-semibold mb-3 tracking">{{ __('Currency Details') }}</p>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-dark">{{ __('Currency Name') }}</label>
+                            <input type="text" name="name"
+                                   class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                   value="{{ old('name') }}"
+                                   placeholder="{{ __('e.g. US Dollar, Cambodian Riel') }}"
+                                   required>
+                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
-                        <!-- Status List -->
-                        <div class="item-stats-list">
-                            <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                <span class="text-muted fw-bold extra-small text-uppercase">Financial Status</span>
-                                <div class="form-check form-switch p-0 m-0">
-                                    <input class="form-check-input premium-switch" type="checkbox" name="is_active" value="1" id="statusSwitch" checked>
-                                </div>
-                            </div>
-                            <div class="py-2">
-                                <span id="statusBadge" class="badge-status bg-success-subtle text-success justify-content-center w-100 mt-2">
-                                    <span class="dot"></span> Active Symbol
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-dark">{{ __('Display Symbol') }}</label>
+                            <div class="input-group" style="max-width: 200px;">
+                                <span class="input-group-text bg-white" style="border-color: #ced4da; font-size: 0.875rem;">
+                                    <i data-lucide="type" style="width:14px; color:#6c757d;"></i>
                                 </span>
+                                <input type="text" name="symbol"
+                                       class="form-control form-control-sm @error('symbol') is-invalid @enderror"
+                                       value="{{ old('symbol') }}"
+                                       placeholder="{{ __('e.g. $, ៛') }}"
+                                       required>
+                                @error('symbol') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
-                        <div class="mt-4 p-4 bg-light rounded-lg border border-dashed text-center">
-                            <i data-lucide="banknote" class="text-muted mb-2" style="width: 40px; height: 40px; opacity: 0.5;"></i>
-                            <h6 class="fw-bold extra-small text-uppercase text-muted mb-2">Currency Configuration</h6>
-                            <p class="extra-small text-muted mb-0">Ensure symbols are correctly formatted for display in invoices and receipts.</p>
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2">
+                                <i data-lucide="plus-circle" style="width:15px;"></i>
+                                {{ __('Save Currency') }}
+                            </button>
+                            <a href="{{ route('currencies.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-4 py-2">
+                                <i data-lucide="x" style="width:15px;"></i>
+                                {{ __('Cancel') }}
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Right Information Column -->
-                    <div class="col-lg-8 border-start-lg">
-                        <div class="item-info-header mb-4">
-                            <span class="info-label text-uppercase mb-1 d-block">Financial Specifications</span>
-                            <h3 class="fw-bold" style="color: #1e293b;">Currency Details</h3>
-                        </div>
+                    <!-- Right: Status -->
+                    <div class="col-lg-4">
+                        <p class="text-muted extra-small text-uppercase fw-semibold mb-3 tracking">{{ __('Status') }}</p>
 
-                        <!-- Input: Name -->
-                        <div class="mb-4">
-                            <label class="info-label mb-2">Currency Common Name :</label>
-                            <input type="text" name="name" class="form-control premium-field @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g. US Dollar, Cambodian Riel" required>
-                            @error('name') <div class="invalid-feedback fw-bold">{{ $message }}</div> @enderror
-                        </div>
-
-                        <!-- Input: Symbol -->
-                        <div class="mb-4">
-                            <label class="info-label mb-2">Display Symbol :</label>
-                            <div class="input-group premium-group shadow-sm" style="max-width: 250px;">
-                                <span class="input-group-text bg-white border-end-0 text-muted">
-                                    <i data-lucide="type" style="width: 16px; color: #f08913;"></i>
-                                </span>
-                                <input type="text" name="symbol" class="form-control premium-field border-start-0 @error('symbol') is-invalid @enderror" value="{{ old('symbol') }}" placeholder="e.g. $, ៛" required>
+                        <div class="border rounded p-3 mb-3" style="border-color: #dee2e6 !important; border-radius: 6px;">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="small fw-semibold text-dark">{{ __('Active Symbol') }}</span>
+                                <div class="form-check form-switch m-0 p-0">
+                                    <input class="form-check-input" type="checkbox" name="is_active" value="1"
+                                           id="statusSwitch" checked style="width:2.4rem; height:1.2rem; cursor:pointer;">
+                                </div>
                             </div>
-                            @error('symbol') <div class="invalid-feedback fw-bold d-block">{{ $message }}</div> @enderror
+                            <span id="statusBadge" class="badge bg-success-subtle text-success d-flex align-items-center gap-1 justify-content-center py-2">
+                                <span class="status-dot bg-success"></span> {{ __('Active') }}
+                            </span>
                         </div>
 
-                        <!-- Action Controls -->
-                        <div class="d-flex flex-wrap gap-2 pt-3 border-top justify-content-end mt-5">
-                            <button type="submit" class="btn btn-orange px-4 py-3 d-flex align-items-center gap-2 shadow-sm">
-                                <i data-lucide="plus-circle" style="width: 20px;"></i>
-                                <span class="fw-bold uppercase-tracking">Register Currency</span>
-                            </button>
-                            <a href="{{ route('currencies.index') }}" class="btn btn-white border px-4 py-3 d-flex align-items-center gap-2 shadow-sm">
-                                <i data-lucide="x" style="width: 20px;"></i>
-                                <span class="fw-bold uppercase-tracking">Discard</span>
-                            </a>
+                        <div class="p-3 bg-light border rounded small text-muted" style="border-color: #dee2e6 !important; border-radius: 6px;">
+                            <div class="d-flex gap-2">
+                                <i data-lucide="info" class="text-primary flex-shrink-0" style="width:15px; margin-top:2px;"></i>
+                                <span>{{ __('Ensure symbols are correctly formatted for invoices and receipts.') }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -96,36 +96,28 @@
 </div>
 
 <style>
-    body { background-color: #fdfaf5 !important; }
-    .extra-small { font-size: 0.65rem; }
-    .uppercase-tracking { text-transform: uppercase; letter-spacing: 1px; }
-    .responsive-h2 { font-size: calc(1.3rem + .5vw); }
-    .info-label { font-weight: 800; font-size: 0.7rem; color: #f08913; text-transform: uppercase; letter-spacing: 1px; }
-    .premium-field { border: 1px solid #e2e8f0 !important; border-radius: 12px !important; padding: 12px 18px !important; background-color: #fff !important; font-weight: 500; transition: all 0.3s; }
-    .premium-field:focus { border-color: #f08913 !important; box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1) !important; }
-    .premium-group { border-radius: 12px; overflow: hidden; }
-    .premium-group .input-group-text { border: 1px solid #e2e8f0 !important; border-right: none !important; padding-left: 18px !important; }
-    .premium-group .premium-field { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; border-left: none !important; }
-    .btn-orange { background-color: #f08913; color: #fff; border: none; border-radius: 12px; transition: 0.3s; }
-    .btn-orange:hover { background-color: #d87b11; color: #fff; transform: translateY(-2px); }
-    .btn-white { background-color: #fff; color: #1e293b; border: 1px solid #e2e8f0; border-radius: 12px; transition: 0.3s; }
-    .btn-white:hover { background-color: #f8fafc; transform: translateY(-2px); }
-    .premium-switch { width: 3rem !important; height: 1.5rem !important; cursor: pointer; border-color: #e2e8f0; background-color: #f1f5f9; }
-    .premium-switch:checked { background-color: #10b981; border-color: #10b981; }
-    .badge-status { padding: 8px 16px; border-radius: 50px; font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; }
-    .badge-status .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-    @media (min-width: 992px) { .border-start-lg { border-left: 1px solid #e2e8f0 !important; } }
+    body { background-color: #f8fafc !important; }
+    .extra-small { font-size: 0.72rem; }
+    .tracking { letter-spacing: 0.05em; }
+    .form-control-sm { border-radius: 4px; border-color: #ced4da; font-size: 0.9rem; }
+    .form-control-sm:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15); }
+    .input-group .input-group-text { border-radius: 4px 0 0 4px; }
+    .input-group .form-control-sm { border-radius: 0 4px 4px 0; }
+    .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }
+    .btn-primary:hover { background-color: #0b5ed7; }
+    .btn-outline-secondary { border-radius: 4px; font-size: 0.875rem; }
+    .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
 </style>
 
 <script>
-    document.getElementById('statusSwitch').onchange = function() {
+    document.getElementById('statusSwitch').onchange = function () {
         const badge = document.getElementById('statusBadge');
         if (this.checked) {
-            badge.className = 'badge-status bg-success-subtle text-success justify-content-center w-100 mt-2';
-            badge.innerHTML = '<span class="dot"></span> Active Symbol';
+            badge.className = 'badge bg-success-subtle text-success d-flex align-items-center gap-1 justify-content-center py-2';
+            badge.innerHTML = '<span class="status-dot bg-success d-inline-block" style="width:7px;height:7px;border-radius:50%;"></span> {{ __("Active") }}';
         } else {
-            badge.className = 'badge-status bg-danger-subtle text-danger justify-content-center w-100 mt-2';
-            badge.innerHTML = '<span class="dot"></span> Inactive Symbol';
+            badge.className = 'badge bg-danger-subtle text-danger d-flex align-items-center gap-1 justify-content-center py-2';
+            badge.innerHTML = '<span class="status-dot bg-danger d-inline-block" style="width:7px;height:7px;border-radius:50%;"></span> {{ __("Inactive") }}';
         }
     };
 </script>

@@ -208,6 +208,110 @@
         }
     </style>
 
+    <!-- Global Select2 Theme Override -->
+    <style>
+        /* ── Container & Selection Box ─────────────────────── */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da !important;
+            border-radius: 4px !important;
+            height: 31px !important;
+            background-color: #fff;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .select2-container--default .select2-selection--single:focus,
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #86b7fe !important;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15) !important;
+            outline: none;
+        }
+        /* Rendered text */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #212529 !important;
+            line-height: 29px !important;
+            font-size: 0.9rem !important;
+            padding-left: 10px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #adb5bd !important;
+        }
+        /* Arrow */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 29px !important;
+            right: 6px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #6c757d transparent transparent transparent !important;
+        }
+        /* Clear × button */
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            margin-right: 4px;
+            color: #adb5bd;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        /* ── Dropdown ───────────────────────────────────────── */
+        .select2-dropdown {
+            border: 1px solid #dee2e6 !important;
+            border-radius: 4px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+            margin-top: 2px;
+        }
+        /* Search box inside dropdown */
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            border: 1px solid #ced4da !important;
+            border-radius: 4px !important;
+            padding: 5px 10px !important;
+            font-size: 0.875rem !important;
+            outline: none;
+        }
+        .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+            border-color: #86b7fe !important;
+            box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.15) !important;
+        }
+        /* Options */
+        .select2-results__option {
+            padding: 7px 12px !important;
+            font-size: 0.875rem !important;
+            color: #212529 !important;
+        }
+        /* Active / highlighted option */
+        .select2-results__option--highlighted,
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: #0d6efd !important;
+            color: #fff !important;
+        }
+        /* Selected (already chosen) */
+        .select2-results__option[aria-selected="true"] {
+            background-color: #e7f0ff !important;
+            color: #0d6efd !important;
+        }
+        /* No results */
+        .select2-results__option--disabled {
+            color: #adb5bd !important;
+        }
+        /* ── Multi-select pills ─────────────────────────────── */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ced4da !important;
+            border-radius: 4px !important;
+            min-height: 31px !important;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #0d6efd !important;
+            border: none !important;
+            border-radius: 3px !important;
+            color: #fff !important;
+            padding: 0 8px !important;
+            font-size: 0.8rem !important;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: rgba(255,255,255,0.75) !important;
+            margin-right: 4px !important;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #fff !important;
+        }
+    </style>
+
     <!-- jQuery & Select2 -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

@@ -7,88 +7,123 @@
     title="{{ __('Table Management') }}"
     subtitle="{{ __('Organize your dining area and track occupancy') }}"
     :createRoute="route('tables.create')"
-    createLabel="{{ __('Add New Table') }}"
+    createLabel="{{ __('Add Table') }}"
     searchPlaceholder="{{ __('Search by table name...') }}"
-    :headers="['#', __('Name'), __('Capacity'), __('Status'), __('Actions')]"
+    :headers="['#', __('Table'), __('Capacity'), __('Status'), __('Actions')]"
     :items="$tables">
+
     <x-slot name="filters">
         <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 m-0 align-items-center">
-            <select name="status" class="select2" onchange="this.form.submit()">
+            <select name="status" class="form-select form-select-sm select2" onchange="this.form.submit()" style="min-width:130px; border-radius:4px;">
                 <option value="">{{ __('All Statuses') }}</option>
                 <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>{{ __('Available') }}</option>
-                <option value="occupied" {{ request('status') == 'occupied' ? 'selected' : '' }}>{{ __('Occupied') }}</option>
-                <option value="reserved" {{ request('status') == 'reserved' ? 'selected' : '' }}>{{ __('Reserved') }}</option>
+                <option value="occupied"  {{ request('status') == 'occupied'  ? 'selected' : '' }}>{{ __('Occupied') }}</option>
+                <option value="reserved"  {{ request('status') == 'reserved'  ? 'selected' : '' }}>{{ __('Reserved') }}</option>
             </select>
             @if(request()->anyFilled(['search', 'status']))
-            <a href="{{ route('tables.index') }}" class="btn btn-action reset" title="Clear Filters" style="width: 48px; height: 48px;">
-                <i data-lucide="rotate-ccw" style="width: 20px;"></i>
+            <a href="{{ route('tables.index') }}" class="action-btn reset-btn" title="{{ __('Clear Filters') }}">
+                <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
             </a>
             @endif
         </form>
     </x-slot>
 
     @forelse($tables as $table)
+    @php
+    $statusMap = [
+        'available' => ['class' => 'available', 'icon' => 'check-circle'],
+        'occupied'  => ['class' => 'occupied',  'icon' => 'user-minus'],
+        'reserved'  => ['class' => 'reserved',  'icon' => 'clock'],
+    ];
+    $s = $statusMap[$table->status] ?? $statusMap['available'];
+    @endphp
     <tr>
-        <td class="text-center">
-            <span class="text-muted fw-bold">{{ $loop->iteration }}</span>
+        <td class="text-center" style="width:50px;">
+            <span class="row-num">{{ $loop->iteration }}</span>
         </td>
-        <td class="ps-4">
+        <td class="ps-3">
             <div class="d-flex align-items-center gap-3">
-                <div class="icon-circle bg-light text-primary">
-                    <i data-lucide="layout-dashboard" style="width: 20px;"></i>
+                <div class="table-icon-box">
+                    <i data-lucide="layout-dashboard" style="width:15px;height:15px;"></i>
                 </div>
                 <div>
-                    <div class="fw-bold text-dark">{{ $table->name }}</div>
-                    <small class="text-muted">Dining Table</small>
+                    <div class="fw-semibold text-dark">{{ $table->name }}</div>
+                    <small class="text-muted" style="font-size:0.75rem;">{{ __('Dining Table') }}</small>
                 </div>
             </div>
         </td>
         <td class="text-center">
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-light rounded-pill border">
-                <i data-lucide="users" class="text-muted" style="width: 14px;"></i>
-                <span class="fw-bold text-dark">{{ $table->capacity }} {{ __('Persons') }}</span>
-            </div>
+            <span class="cap-badge">
+                <i data-lucide="users" style="width:12px;height:12px;"></i>
+                {{ $table->capacity }}
+            </span>
         </td>
         <td class="text-center">
-            @php
-            $statusConfig = [
-            'available' => ['class' => 'bg-success-subtle text-success', 'icon' => 'check-circle'],
-            'occupied' => ['class' => 'bg-danger-subtle text-danger', 'icon' => 'user-minus'],
-            'reserved' => ['class' => 'bg-warning-subtle text-warning', 'icon' => 'clock'],
-            ];
-            $config = $statusConfig[$table->status] ?? $statusConfig['available'];
-            @endphp
-            <span class="badge {{ $config['class'] }} px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
-                <i data-lucide="{{ $config['icon'] }}" style="width: 14px;"></i>
+            <span class="status-badge {{ $s['class'] }}">
+                <span class="status-dot"></span>
                 {{ __(ucfirst($table->status)) }}
             </span>
         </td>
-        <td class="text-end pe-4">
+        <td class="text-end pe-4" style="width:120px;">
             <x-table-actions
                 :editRoute="route('tables.edit', $table->id)"
                 :viewRoute="route('tables.show', $table->id)"
-                :deleteRoute="route('tables.destroy', $table->id)" />
+                :deleteRoute="route('tables.destroy', $table->id)"
+                :id="$table->id"
+                :name="$table->name" />
         </td>
     </tr>
     @empty
     <tr>
-        <td colspan="5" class="text-center py-5">
-            <i data-lucide="search-x" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
-            <p class="text-muted">{{ __('No tables found matching your search.') }}</p>
+        <td colspan="5" class="py-5">
+            <div class="text-center">
+                <i data-lucide="layout-dashboard" style="width:48px;height:48px;color:#ced4da;"></i>
+                <p class="text-muted mt-3 fw-semibold mb-1">{{ __('No tables found') }}</p>
+                <small class="text-muted">{{ __('Add your first table to get started.') }}</small>
+            </div>
         </td>
     </tr>
     @endforelse
 </x-master-table>
 
 <style>
-    .icon-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #e2e8f0;
+    body { background-color: #f8fafc !important; }
+    .row-num {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 26px; height: 26px;
+        background: #f1f3f5; border-radius: 50%;
+        font-size: 0.75rem; font-weight: 600; color: #6c757d;
     }
+    .table-icon-box {
+        width: 36px; height: 36px; border-radius: 8px;
+        background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .cap-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 10px; border-radius: 20px;
+        background: #f1f5f9; border: 1px solid #e2e8f0;
+        font-size: 0.8rem; font-weight: 600; color: #475569;
+    }
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .status-badge .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .status-badge.available { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-badge.available .status-dot { background: #22c55e; }
+    .status-badge.occupied  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-badge.occupied .status-dot  { background: #ef4444; }
+    .status-badge.reserved  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .status-badge.reserved .status-dot  { background: #f59e0b; }
+    .action-btn {
+        width: 32px; height: 32px; border-radius: 6px;
+        border: 1px solid #e9ecef; background: #fff;
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.15s; text-decoration: none; color: #6c757d;
+    }
+    .action-btn.reset-btn:hover { background: #6c757d; color: #fff; border-color: #6c757d; }
+    .form-select-sm { font-size: 0.875rem; border-color: #ced4da; }
 </style>
 @endsection

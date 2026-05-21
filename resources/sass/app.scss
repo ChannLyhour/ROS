@@ -178,9 +178,9 @@ body {
 .toast-magic span { font-weight: 600; color: #333; }
 :root {
     --sidebar-width: 280px;
-    --primary-color: #ff8c00;
+    --primary-color: #0d6efd;
     --dark-bg: #1a1a1a;
-    --light-border: rgba(0,0,0,0.05);
+    --light-border: rgba(0,0,0,0.06);
 }
 
 .admin-layout {
@@ -281,14 +281,14 @@ body {
 }
 
 .nav-link:hover {
-    background: #fff5eb;
+    background: #eff6ff;
     color: var(--primary-color);
 }
 
 .nav-link.active {
-    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
+    background: #0d6efd;
     color: #fff;
-    box-shadow: 0 4px 15px rgba(255, 69, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
 }
 
 .main-content {
@@ -478,8 +478,8 @@ body {
     background: #f8f9fa;
     border: none;
     padding: 10px;
-    border-radius: 12px;
-    color: #333;
+    border-radius: 8px;
+    color: #495057;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -488,24 +488,23 @@ body {
 }
 
 .navbar-toggle:hover {
-    background: #fff5eb;
+    background: #eff6ff;
     color: var(--primary-color);
-    transform: scale(1.05);
 }
 
 .user-profile {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.9rem;
-    color: #333;
-    padding: 5px 15px;
+    color: #212529;
+    padding: 5px 12px;
     background: #f8f9fa;
     border-radius: 50px;
-    border: 1px solid var(--light-border);
+    border: 1px solid #dee2e6;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     
     &::after {
         display: none !important;
@@ -513,8 +512,8 @@ body {
 }
 
 .user-profile:hover {
-    background: #fff5eb;
-    border-color: var(--primary-color);
+    background: #eff6ff;
+    border-color: #93c5fd;
 }
 
 .dropdown-item {
@@ -528,7 +527,7 @@ body {
 }
 
 .dropdown-item:hover {
-    background: #fff5eb !important;
+    background: #eff6ff !important;
     color: var(--primary-color) !important;
 }
 
@@ -540,20 +539,20 @@ body {
 .user-avatar {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
+    background: #0d6efd;
     color: #fff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
-    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.2);
+    font-weight: 700;
 }
 
 .user-avatar-lg {
     width: 45px;
     height: 45px;
-    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
+    background: #0d6efd;
     color: #fff;
     border-radius: 50%;
     display: flex;
@@ -565,33 +564,31 @@ body {
 
 /* POS Create Button in Navbar */
 .pos-create-btn {
-    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
+    background: #0d6efd;
     color: #fff !important;
-    padding: 8px 20px;
-    border-radius: 12px;
-    font-weight: 800;
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-weight: 700;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 12px rgba(255, 69, 0, 0.2);
+    gap: 7px;
+    transition: background 0.2s;
     border: none;
     font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .pos-create-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 69, 0, 0.3);
-    filter: brightness(1.05);
+    background: #0b5ed7;
+    color: #fff !important;
 }
 
 .pos-create-btn i {
-    width: 18px;
-    height: 18px;
-    stroke-width: 3px;
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5px;
 }
 
 /* Command Palette Results */
@@ -607,7 +604,7 @@ body {
 }
 
 .command-result-item.selected {
-    background: #fff5eb;
+    background: #eff6ff;
 }
 
 .command-result-item .arrow {
@@ -631,24 +628,21 @@ body {
 
 /* Navbar Search Button */
 .nav-search-btn {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 8px 16px;
-    min-width: 240px;
-    color: #64748b;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 7px 14px;
+    min-width: 220px;
+    color: #6c757d;
     font-size: 0.85rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.15s, color 0.15s;
     cursor: pointer;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .nav-search-btn:hover {
     background: #fff;
-    border-color: var(--primary-color);
-    box-shadow: 0 10px 15px -3px rgba(255, 140, 0, 0.1), 0 4px 6px -2px rgba(255, 140, 0, 0.05);
+    border-color: #86b7fe;
     color: var(--primary-color);
-    transform: translateY(-1px);
 }
 
 .kbd-shortcut {

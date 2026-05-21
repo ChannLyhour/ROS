@@ -351,16 +351,17 @@
     }
 
     .premium-field {
-        border: 2px solid #f1f5f9;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: 0.3s;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 12px 18px !important;
+        font-weight: 500;
+        transition: all 0.3s;
     }
 
     .premium-field:focus {
-        border-color: #f08913;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1);
+        border-color: #f08913 !important;
+        background: white !important;
+        box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1) !important;
     }
 
     .tracking-wider {
@@ -379,6 +380,8 @@
             window.location.reload();
         } else {
             timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
             let unit = mins > 0 ? "{{ __('m') }}" : "{{ __('s') }}";
             let display = mins > 0 ? `${mins}${unit} ${secs}{{ __('s') }}` : `${secs}{{ __('s') }}`;
             if (countdownEl) countdownEl.innerText = `{{ __('Refreshing in') }} ${display}`;
