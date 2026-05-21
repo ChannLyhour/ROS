@@ -13,6 +13,7 @@ class TableController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Table::class);
         $query = Table::latest();
 
         if ($request->filled('search')) {
@@ -34,6 +35,7 @@ class TableController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Table::class);
         return view('admin.tables.create');
     }
 
@@ -42,6 +44,7 @@ class TableController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Table::class);
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name',
             'capacity' => 'required|integer|min:1',
@@ -58,6 +61,7 @@ class TableController extends Controller
      */
     public function show(Table $table)
     {
+        $this->authorize('view', $table);
         return view('admin.tables.show', compact('table'));
     }
 
@@ -66,6 +70,7 @@ class TableController extends Controller
      */
     public function edit(Table $table)
     {
+        $this->authorize('update', $table);
         return view('admin.tables.edit', compact('table'));
     }
 
@@ -74,6 +79,7 @@ class TableController extends Controller
      */
     public function update(Request $request, Table $table)
     {
+        $this->authorize('update', $table);
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name,' . $table->id,
             'capacity' => 'required|integer|min:1',
@@ -90,6 +96,7 @@ class TableController extends Controller
      */
     public function destroy(Table $table)
     {
+        $this->authorize('delete', $table);
         $table->delete();
 
         return redirect()->route('tables.index')->with('success', __('Table deleted successfully!'));

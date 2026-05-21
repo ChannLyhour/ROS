@@ -15,6 +15,7 @@ class MenuItemController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', MenuItem::class);
         $query = MenuItem::with('category')->latest();
 
         if ($request->filled('search')) {
@@ -40,6 +41,7 @@ class MenuItemController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', MenuItem::class);
         $categories = Category::all();
         return view('admin.menu.create', compact('categories'));
     }
@@ -49,6 +51,7 @@ class MenuItemController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', MenuItem::class);
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -70,6 +73,7 @@ class MenuItemController extends Controller
      */
     public function show(MenuItem $menu)
     {
+        $this->authorize('view', $menuItem);
         return view('admin.menu.show', ['menuItem' => $menu]);
     }
 
@@ -78,6 +82,7 @@ class MenuItemController extends Controller
      */
     public function edit(MenuItem $menu)
     {
+        $this->authorize('update', $menuItem);
         $categories = Category::all();
         return view('admin.menu.edit', ['menuItem' => $menu, 'categories' => $categories]);
     }
@@ -87,6 +92,7 @@ class MenuItemController extends Controller
      */
     public function update(Request $request, MenuItem $menu)
     {
+        $this->authorize('update', $menuItem);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -111,6 +117,7 @@ class MenuItemController extends Controller
      */
     public function destroy(MenuItem $menu)
     {
+        $this->authorize('delete', $menuItem);
         if ($menu->image) {
             UploadImageHelper::delete($menu->image);
         }

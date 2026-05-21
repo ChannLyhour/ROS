@@ -13,6 +13,7 @@ class CurrencyController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Currency::class);
         $query = Currency::query();
 
         if ($request->filled('search')) {
@@ -31,6 +32,7 @@ class CurrencyController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Currency::class);
         return view('admin.currencies.create');
     }
 
@@ -39,6 +41,7 @@ class CurrencyController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Currency::class);
         $request->validate([
             'name' => 'required|string|max:255',
             'symbol' => 'required|string|max:10',
@@ -58,6 +61,7 @@ class CurrencyController extends Controller
      */
     public function edit(Currency $currency)
     {
+        $this->authorize('update', $currency);
         return view('admin.currencies.edit', compact('currency'));
     }
 
@@ -66,6 +70,7 @@ class CurrencyController extends Controller
      */
     public function update(Request $request, Currency $currency)
     {
+        $this->authorize('update', $currency);
         $request->validate([
             'name' => 'required|string|max:255',
             'symbol' => 'required|string|max:10',
@@ -85,6 +90,7 @@ class CurrencyController extends Controller
      */
     public function destroy(Currency $currency)
     {
+        $this->authorize('delete', $currency);
         $currency->delete();
         return redirect()->route('currencies.index')->with('success', 'Currency deleted successfully!');
     }

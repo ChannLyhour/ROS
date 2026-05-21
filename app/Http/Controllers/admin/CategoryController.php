@@ -13,6 +13,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Category::class);
         $query = Category::latest();
 
         if ($request->filled('search')) {
@@ -31,6 +32,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Category::class);
         
         return view('admin.categories.create');
     }
@@ -40,6 +42,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Category::class);
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
@@ -56,6 +59,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
+        $this->authorize('view', $category);
         return view('admin.categories.show', compact('category'));
     }
 
@@ -64,6 +68,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
+        $this->authorize('update', $category);
         return view('admin.categories.edit', compact('category'));
     }
 
@@ -72,6 +77,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $this->authorize('update', $category);
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string',
@@ -88,6 +94,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $this->authorize('delete', $category);
         $category->delete();
 
         return redirect()->route('categories.index')->with('success', __('Category deleted successfully!'));

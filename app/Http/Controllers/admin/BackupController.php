@@ -7,6 +7,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,7 @@ class BackupController extends Controller
      */
     public function index()
     {
+        Gate::authorize('manage-backups');
         $backups = [];
         try {
             $config = Config::fromArray(config('backup'));
@@ -55,6 +57,7 @@ class BackupController extends Controller
      */
     public function create()
     {
+        Gate::authorize('manage-backups');
         try {
             // Trigger backup in background or wait for it
             Artisan::call('backup:run', ['--only-db' => true]);
@@ -69,6 +72,7 @@ class BackupController extends Controller
      */
     public function download(Request $request)
     {
+        Gate::authorize('manage-backups');
         $disk = $request->disk;
         $file = config('backup.backup.name') . '/' . $request->file;
 
@@ -84,6 +88,7 @@ class BackupController extends Controller
      */
     public function destroy(Request $request)
     {
+        Gate::authorize('manage-backups');
         $disk = $request->disk;
         $file = config('backup.backup.name') . '/' . $request->file;
 

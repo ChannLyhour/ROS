@@ -13,6 +13,7 @@ class TranslationController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Translation::class);
         $query = Translation::query();
 
         if ($request->filled('search')) {
@@ -38,6 +39,7 @@ class TranslationController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Translation::class);
         return view('admin.translations.create');
     }
 
@@ -46,6 +48,7 @@ class TranslationController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Translation::class);
         $request->validate([
             'key' => 'required|unique:translations,key',
             'en' => 'nullable',
@@ -63,6 +66,7 @@ class TranslationController extends Controller
      */
     public function edit(Translation $translation)
     {
+        $this->authorize('update', $translation);
         return view('admin.translations.edit', compact('translation'));
     }
 
@@ -71,6 +75,7 @@ class TranslationController extends Controller
      */
     public function update(Request $request, Translation $translation)
     {
+        $this->authorize('update', $translation);
         $request->validate([
             'key' => 'required|unique:translations,key,' . $translation->id,
             'en' => 'nullable',
@@ -88,6 +93,7 @@ class TranslationController extends Controller
      */
     public function destroy(Translation $translation)
     {
+        $this->authorize('delete', $translation);
         $translation->delete();
         return redirect()->route('translations.index')->with('success', 'Translation deleted successfully');
     }

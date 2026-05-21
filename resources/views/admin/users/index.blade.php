@@ -6,7 +6,7 @@
 <x-master-table
     title="{{ __('Staff Management') }}"
     subtitle="{{ __('Coordinate your workforce and system access levels') }}"
-    :createRoute="route('users.create')"
+    :createRoute="auth()->user()->can('create-users') ? route('users.create') : null"
     createLabel="{{ __('Add Staff') }}"
     searchPlaceholder="{{ __('Search by name or email...') }}"
     :headers="['#', __('Staff'), __('Phone'), __('Role'), __('Status'), __('Actions')]"
@@ -63,9 +63,12 @@
         </td>
         <td class="text-end pe-4" style="width:100px;">
             <div class="d-flex justify-content-end gap-1">
+                @can('edit-users')
                 <a href="{{ route('users.edit', $user->id) }}" class="action-btn edit-btn" title="{{ __('Edit') }}">
                     <i data-lucide="pencil" style="width:14px;height:14px;"></i>
                 </a>
+                @endcan
+                @can('delete-users')
                 <button type="button" class="action-btn delete-btn" title="{{ __('Deactivate') }}"
                         onclick="confirmDelete('delete-form-{{ $user->id }}', '{{ $user->name }}')">
                     <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
@@ -73,6 +76,7 @@
                 <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-none">
                     @csrf @method('DELETE')
                 </form>
+                @endcan
             </div>
         </td>
     </tr>

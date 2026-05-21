@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;

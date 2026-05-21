@@ -12,18 +12,21 @@ class RoleController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Role::class);
         $roles = Role::withCount('users')->get();
         return view('admin.roles.index', compact('roles'));
     }
 
     public function create()
     {
+        $this->authorize('create', Role::class);
         $permissions = Permission::all();
         return view('admin.roles.create', compact('permissions'));
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Role::class);
         $request->validate([
             'name' => 'required|string|unique:roles,name',
             'description' => 'nullable|string',
@@ -46,6 +49,7 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        $this->authorize('update', $role);
         $permissions = Permission::all();
         $rolePermissions = $role->permissions->pluck('name')->toArray();
         return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
@@ -53,11 +57,13 @@ class RoleController extends Controller
 
     public function show(Role $role)
     {
+        $this->authorize('view', $role);
         return $this->edit($role);
     }
 
     public function update(Request $request, Role $role)
     {
+        $this->authorize('update', $role);
         $request->validate([
             'name' => 'required|string|unique:roles,name,' . $role->id,
             'description' => 'nullable|string',
@@ -81,6 +87,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
+        $this->authorize('delete', $role);
         if ($role->users()->count() > 0) {
             return redirect()->back()->with('error', 'Cannot delete role that has active users!');
         }

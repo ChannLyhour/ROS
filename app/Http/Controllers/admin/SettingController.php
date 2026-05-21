@@ -16,6 +16,7 @@ class SettingController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Setting::class);
         $defaults = [
             'business_name' => 'ROS POS',
             'currency_symbol' => '$',
@@ -38,6 +39,7 @@ class SettingController extends Controller
      */
     public function update(Request $request)
     {
+        $this->authorize('update', $setting);
         $data = $request->except('_token', '_method', 'business_logo');
 
         // Handle Business Logo

@@ -14,6 +14,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Payment::class);
         $query = Payment::with(['order.customer', 'order.user'])->latest();
 
         if ($request->filled('search')) {
@@ -37,6 +38,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
+        $this->authorize('view', $payment);
         $payment->load(['order.items.menuItem', 'order.customer', 'order.diningTable', 'order.user']);
         return view('admin.payments.show', compact('payment'));
     }

@@ -14,6 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
         $query = User::with('role');
 
         if ($request->filled('search')) {
@@ -33,12 +34,14 @@ class UserController extends Controller
 
     public function create()
     {
+        $this->authorize('create', User::class);
         $roles = Role::all();
         return view('admin.users.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -67,12 +70,14 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         $roles = Role::all();
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -104,6 +109,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
         if ($user->id === auth()->id()) {
             return redirect()->back()->with('error', 'You cannot delete yourself!');
         }

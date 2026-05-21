@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use App\Models\Category;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ class POSSearchController extends Controller
      */
     public function search(Request $request)
     {
+        Gate::authorize('create-orders');
         $query = $request->get('q');
         $type = $request->get('type'); // 'all', 'categories', 'items'
 

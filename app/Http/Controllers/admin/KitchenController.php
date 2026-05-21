@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 
 use App\Models\Order;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 
 class KitchenController extends Controller
 {
     public function index(Request $request)
     {
+        Gate::authorize('view-orders');
         $status = $request->get('status', 'all');
 
         $query = Order::with(['items.menuItem', 'diningTable', 'customer', 'payment'])

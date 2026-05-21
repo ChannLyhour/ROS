@@ -18,11 +18,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $permissions = [
             'order-management' => ['view-orders', 'create-orders', 'edit-orders', 'delete-orders', 'void-orders'],
             'menu-management' => ['view-menu', 'create-menu', 'edit-menu', 'delete-menu'],
-            'table-management' => ['view-tables', 'manage-tables'],
+            'table-management' => ['view-tables', 'create-tables', 'edit-tables', 'delete-tables'],
             'payment-management' => ['view-payments', 'refund-payments'],
-            'staff-management' => ['view-staff', 'manage-staff'],
+            'staff-management' => ['view-users', 'create-users', 'edit-users', 'delete-users'],
+            'customer-management' => ['view-customers', 'create-customers', 'edit-customers', 'delete-customers'],
             'role-management' => ['view-roles', 'create-roles', 'edit-roles', 'delete-roles'],
             'reports-management' => ['view-reports'],
+            'backup-management' => ['manage-backups'],
             'settings' => ['manage-settings', 'manage-translations'],
             
         ];
@@ -53,8 +55,9 @@ class RolesAndPermissionsSeeder extends Seeder
         $cashier->syncPermissions([
             'view-orders', 'create-orders', 'edit-orders',
             'view-payments', 
-            'view-tables', 'manage-tables',
-            'view-menu'
+            'view-tables', 'create-tables', 'edit-tables',
+            'view-menu',
+            'view-customers', 'create-customers'
         ]);
 
         // 3. Kitchen: Focused on KDS and Menu viewing

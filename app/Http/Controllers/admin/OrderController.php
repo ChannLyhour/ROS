@@ -28,6 +28,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Order::class);
         $query = Order::with(['customer', 'diningTable', 'user'])->latest();
 
         if ($request->filled('search')) {
@@ -53,6 +54,7 @@ class OrderController extends Controller
      */
     public function create(Request $request)
     {
+        $this->authorize('create', Order::class);
         $menuItems = MenuItem::where('status', 'available')->get();
         $tables = Table::where('status', 'available')->get();
         $customers = Customer::all();
@@ -95,6 +97,7 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
+        $this->authorize('create', Order::class);
         try {
             $order = $this->orderService->processOrder($request->validated());
             
@@ -126,6 +129,7 @@ class OrderController extends Controller
      */
     public function edit(Order $order)
     {
+        $this->authorize('update', $order);
         $categories = Category::all();
         $menuItems = MenuItem::with('category')->get();
         $tables = Table::all();
@@ -142,6 +146,7 @@ class OrderController extends Controller
      */
     public function update(StoreOrderRequest $request, Order $order)
     {
+        $this->authorize('update', $order);
         try {
             $data = $request->validated();
             $data['order_id'] = $order->id; // Enforce route parameter order_id
@@ -176,6 +181,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        $this->authorize('view', $order);
         $order->load(['items.menuItem', 'customer', 'diningTable', 'user', 'payment']);
         $appSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
         return view('admin.orders.show', compact('order', 'appSettings'));
@@ -200,6 +206,7 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
+        $this->authorize('delete', $order);
         $this->orderService->deleteOrder($order);
         return redirect()->route('orders.index')->with('success', 'Order deleted successfully!');
     }

@@ -14,6 +14,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Customer::class);
         $query = Customer::latest();
 
         if ($request->filled('search')) {
@@ -35,6 +36,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Customer::class);
         return view('admin.customers.create');
     }
 
@@ -43,6 +45,7 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Customer::class);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255|unique:customers,email',
@@ -64,6 +67,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $this->authorize('view', $customer);
         return view('admin.customers.show', compact('customer'));
     }
 
@@ -72,6 +76,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
+        $this->authorize('update', $customer);
         return view('admin.customers.edit', compact('customer'));
     }
 
@@ -80,6 +85,7 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
+        $this->authorize('update', $customer);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
@@ -104,6 +110,7 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
+        $this->authorize('delete', $customer);
         if ($customer->image) {
             UploadImageHelper::delete($customer->image);
         }
