@@ -48,7 +48,7 @@ class TableController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name',
             'capacity' => 'required|integer|min:1',
-            'status' => 'required|in:available,occupied,reserved',
+            'status' => 'required|in:Available,Taken,Reserved',
         ]);
 
         Table::create($request->all());
@@ -83,7 +83,7 @@ class TableController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name,' . $table->id,
             'capacity' => 'required|integer|min:1',
-            'status' => 'required|in:available,occupied,reserved',
+            'status' => 'required|in:Available,Taken,Reserved',
         ]);
 
         $table->update($request->all());

@@ -56,7 +56,9 @@
         <td class="text-end pe-4" style="width:100px;">
             <x-table-actions
                 :viewRoute="route('payments.show', $payment->id)"
-                :printRoute="route('orders.receipt', $payment->order_id)" />
+                viewPermission="view-payments"
+                :printRoute="route('orders.receipt', $payment->order_id)" 
+                printPermission="view-payments" />
         </td>
     </tr>
     @empty

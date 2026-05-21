@@ -56,6 +56,7 @@
     title="{{ __('Category Management') }}"
     subtitle="{{ __('Organize your menu items into structured groups') }}"
     :createRoute="route('categories.create')"
+    createPermission="create-menu"
     createLabel="{{ __('Add Category') }}"
     searchPlaceholder="{{ __('Search category name...') }}"
     :headers="[__('#'), __('Category'), __('Items'), __('Status'), __('Actions')]"
@@ -110,17 +111,21 @@
         {{-- Actions --}}
         <td class="text-end pe-4" style="width: 120px;">
             <div class="d-flex justify-content-end gap-1">
+                @can('edit-menu')
                 <a href="{{ route('categories.edit', $category->id) }}"
                    class="action-btn edit-btn"
                    title="{{ __('Edit Category') }}">
                     <i data-lucide="pencil" style="width:14px;height:14px;"></i>
                 </a>
+                @endcan
+                @can('delete-menu')
                 <button type="button"
                         class="action-btn delete-btn"
                         title="{{ __('Delete Category') }}"
                         onclick="confirmDelete('delete-form-{{ $category->id }}', '{{ $category->name }}')">
                     <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
                 </button>
+                @endcan
                 <form id="delete-form-{{ $category->id }}" action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-none">
                     @csrf
                     @method('DELETE')

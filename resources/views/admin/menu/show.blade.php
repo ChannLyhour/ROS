@@ -11,10 +11,12 @@
             <p class="text-muted small mb-0">{{ __('Viewing') }}: <strong>{{ $menuItem->name }}</strong></p>
         </div>
         <div class="d-flex gap-2">
+            @can('edit-menu')
             <a href="{{ route('menu.edit', $menuItem->id) }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-3">
                 <i data-lucide="pencil" style="width:15px;"></i>
                 <span class="d-none d-sm-inline">{{ __('Edit Item') }}</span>
             </a>
+            @endcan
             <a href="{{ route('menu.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
                 <i data-lucide="arrow-left" style="width:15px;"></i>
                 {{ __('Back') }}

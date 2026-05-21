@@ -7,6 +7,7 @@
     title="{{ __('Staff Management') }}"
     subtitle="{{ __('Coordinate your workforce and system access levels') }}"
     :createRoute="auth()->user()->can('create-users') ? route('users.create') : null"
+    createPermission="create-users"
     createLabel="{{ __('Add Staff') }}"
     searchPlaceholder="{{ __('Search by name or email...') }}"
     :headers="['#', __('Staff'), __('Phone'), __('Role'), __('Status'), __('Actions')]"

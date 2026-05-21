@@ -29,7 +29,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Order::class);
-        $query = Order::with(['customer', 'diningTable', 'user'])->latest();
+        $query = Order::with(['customer', 'diningTable', 'user', 'createdBy'])->latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -44,7 +44,7 @@ class OrderController extends Controller
             $query->where('order_type', $request->type);
         }
 
-        $orders = $query->paginate(10);
+        $orders = $query->paginate(15);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -54,7 +54,6 @@ class OrderController extends Controller
      */
     public function create(Request $request)
     {
-        $this->authorize('create', Order::class);
         $menuItems = MenuItem::where('status', 'available')->get();
         $tables = Table::where('status', 'available')->get();
         $customers = Customer::all();
@@ -97,10 +96,9 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        $this->authorize('create', Order::class);
         try {
             $order = $this->orderService->processOrder($request->validated());
-            
+
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -129,15 +127,14 @@ class OrderController extends Controller
      */
     public function edit(Order $order)
     {
-        $this->authorize('update', $order);
         $categories = Category::all();
         $menuItems = MenuItem::with('category')->get();
         $tables = Table::all();
         $customers = Customer::all();
-        
+
         $existingOrder = $order->load('items.menuItem');
         $initialCart = $this->mapOrderToCart($existingOrder);
-        
+
         return view('admin.orders.edit', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
     }
 
@@ -146,13 +143,12 @@ class OrderController extends Controller
      */
     public function update(StoreOrderRequest $request, Order $order)
     {
-        $this->authorize('update', $order);
         try {
             $data = $request->validated();
             $data['order_id'] = $order->id; // Enforce route parameter order_id
 
             $updatedOrder = $this->orderService->processOrder($data);
-            
+
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -192,6 +188,10 @@ class OrderController extends Controller
      */
     public function updateStatus(Request $request, Order $order)
     {
+        if (!Gate::check('edit-orders') && !Gate::check('view-kitchen')) {
+            abort(403, 'THIS ACTION IS UNAUTHORIZED.');
+        }
+
         $request->validate([
             'status' => 'required|in:pending,preparing,ready,completed,cancelled',
         ]);

@@ -71,11 +71,14 @@
                             'menu'        => ['icon' => 'book-open',     'color' => '#10b981'],
                             'table'       => ['icon' => 'layout',        'color' => '#f59e0b'],
                             'payment'     => ['icon' => 'credit-card',   'color' => '#0ea5e9'],
-                            'staff'       => ['icon' => 'users',         'color' => '#ec4899'],
+                            'user'        => ['icon' => 'users',         'color' => '#ec4899'],
+                            'customer'    => ['icon' => 'user-check',    'color' => '#14b8a6'],
                             'role'        => ['icon' => 'shield-check',  'color' => '#f43f5e'],
                             'setting'     => ['icon' => 'settings',      'color' => '#64748b'],
                             'report'      => ['icon' => 'bar-chart-3',   'color' => '#8b5cf6'],
                             'translation' => ['icon' => 'languages',     'color' => '#f59e0b'],
+                            'backup'      => ['icon' => 'database',      'color' => '#3b82f6'],
+                            'kitchen'     => ['icon' => 'flame',         'color' => '#ef4444'],
                         ];
                         $iconMap = ['view'=>'eye','create'=>'plus-circle','edit'=>'edit-3','delete'=>'trash-2','manage'=>'settings-2','void'=>'slash','refund'=>'rotate-ccw'];
                         @endphp

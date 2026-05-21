@@ -26,6 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'reports-management' => ['view-reports'],
             'backup-management' => ['manage-backups'],
             'settings' => ['manage-settings', 'manage-translations'],
+            'kitchen-management' => ['view-kitchen'],
             
         ];
 
@@ -68,7 +69,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $kitchen->syncPermissions([
             'view-menu',
             'view-tables',
-            'view-orders'
+            'view-orders',
+            'view-kitchen'
         ]);
     }
 }

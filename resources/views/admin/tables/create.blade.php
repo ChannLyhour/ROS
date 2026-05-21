@@ -27,9 +27,9 @@
                         <div class="border rounded p-3 mb-3" style="border-color:#dee2e6 !important; border-radius:6px;">
                             <label class="form-label fw-semibold small text-dark mb-2">{{ __('Initial Status') }}</label>
                             <select name="status" class="form-select form-select-sm select2" style="border-radius:4px;">
-                                <option value="available" selected>{{ __('Available') }}</option>
-                                <option value="occupied">{{ __('Occupied') }}</option>
-                                <option value="reserved">{{ __('Reserved') }}</option>
+                                <option value="{{ __('Available') }}" selected>{{ __('Available') }}</option>
+                                <option value="{{ __('Taken') }}">{{ __('Taken') }}</option>
+                                <option value="{{ __('Reserved') }}">{{ __('Reserved') }}</option>
                             </select>
                         </div>
                         <div class="p-3 bg-light border rounded small text-muted" style="border-color:#dee2e6 !important; border-radius:6px;">
@@ -46,9 +46,9 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-dark">{{ __('Table Name / Number') }}</label>
                             <input type="text" name="name"
-                                   class="form-control form-control-sm @error('name') is-invalid @enderror"
-                                   value="{{ old('name') }}"
-                                   placeholder="{{ __('e.g. VIP-01 or Table 12') }}" required>
+                                class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                value="{{ old('name') }}"
+                                placeholder="{{ __('e.g. VIP-01 or Table 12') }}" required>
                             @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-4">
@@ -58,9 +58,9 @@
                                     <i data-lucide="users" style="width:14px;"></i>
                                 </span>
                                 <input type="number" name="capacity"
-                                       class="form-control form-control-sm @error('capacity') is-invalid @enderror"
-                                       value="{{ old('capacity', 2) }}" min="1" required
-                                       style="border-radius:0;">
+                                    class="form-control form-control-sm @error('capacity') is-invalid @enderror"
+                                    value="{{ old('capacity', 2) }}" min="1" required
+                                    style="border-radius:0;">
                                 <span class="input-group-text bg-white text-muted small" style="border-color:#ced4da; border-radius:0 4px 4px 0;">
                                     {{ __('Guests') }}
                                 </span>
@@ -84,13 +84,43 @@
     </div>
 </div>
 <style>
-    body { background-color: #f8fafc !important; }
-    .extra-small { font-size: 0.72rem; }
-    .tracking { letter-spacing: 0.05em; }
-    .form-control-sm { border-radius: 4px; border-color: #ced4da; font-size: 0.9rem; }
-    .form-control-sm:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15); }
-    .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }
-    .btn-primary:hover { background-color: #0b5ed7; }
-    .btn-outline-secondary { border-radius: 4px; font-size: 0.875rem; }
+    body {
+        background-color: #f8fafc !important;
+    }
+
+    .extra-small {
+        font-size: 0.72rem;
+    }
+
+    .tracking {
+        letter-spacing: 0.05em;
+    }
+
+    .form-control-sm {
+        border-radius: 4px;
+        border-color: #ced4da;
+        font-size: 0.9rem;
+    }
+
+    .form-control-sm:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
 </style>
 @endsection

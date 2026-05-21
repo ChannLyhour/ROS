@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['email' => 'admin@ros.com'],
             [
-                'name' => 'Admin Staff',
+                'name' => 'Admin',
                 'password' => bcrypt('password'),
                 'role_id' => $adminRole->id,
                 'state' => 'Active'
@@ -57,9 +57,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Tables
-        \App\Models\Table::firstOrCreate(['name' => 'Table 1'], ['capacity' => 2, 'status' => 'available']);
-        \App\Models\Table::firstOrCreate(['name' => 'Table 2'], ['capacity' => 4, 'status' => 'available']);
-        \App\Models\Table::firstOrCreate(['name' => 'Table 3'], ['capacity' => 6, 'status' => 'available']);
+        \App\Models\Table::firstOrCreate(['name' => 'Table 1'], ['capacity' => 2, 'status' => 'Available']);
+        \App\Models\Table::firstOrCreate(['name' => 'Table 2'], ['capacity' => 4, 'status' => 'Available']);
+        \App\Models\Table::firstOrCreate(['name' => 'Table 3'], ['capacity' => 6, 'status' => 'Available']);
 
         // Settings
         $settings = [

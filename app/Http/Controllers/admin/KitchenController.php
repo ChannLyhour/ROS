@@ -13,7 +13,7 @@ class KitchenController extends Controller
 {
     public function index(Request $request)
     {
-        Gate::authorize('view-orders');
+        Gate::authorize('view-kitchen');
         $status = $request->get('status', 'all');
 
         $query = Order::with(['items.menuItem', 'diningTable', 'customer', 'payment'])
@@ -50,6 +50,7 @@ class KitchenController extends Controller
 
     public function updateNote(Request $request, Order $order)
     {
+        Gate::authorize('view-kitchen');
         $order->update([
             'notes' => $request->notes
         ]);

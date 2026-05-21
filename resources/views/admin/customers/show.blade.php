@@ -11,10 +11,12 @@
             <p class="text-muted small mb-0">{{ __('Viewing details for') }} <strong>{{ $customer->name }}</strong></p>
         </div>
         <div class="d-flex gap-2">
+            @can('edit-customers')
             <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-3">
                 <i data-lucide="pencil" style="width:15px;"></i>
                 {{ __('Edit') }}
             </a>
+            @endcan
             <a href="{{ route('customers.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
                 <i data-lucide="arrow-left" style="width:15px;"></i>
                 {{ __('Back') }}
@@ -28,8 +30,8 @@
             <div class="card border h-100" style="border-color:#dee2e6 !important; border-radius:6px;">
                 <div class="card-body p-4 text-center">
                     <img src="{{ $customer->display_image }}" alt="{{ $customer->name }}"
-                         class="rounded-circle border mb-3"
-                         style="width:100px; height:100px; object-fit:cover; border-color:#dee2e6 !important;">
+                        class="rounded-circle border mb-3"
+                        style="width:100px; height:100px; object-fit:cover; border-color:#dee2e6 !important;">
                     <h5 class="fw-semibold text-dark mb-0">{{ $customer->name }}</h5>
                     <small class="text-muted">{{ __('Client') }} #{{ $customer->id }}</small>
 
@@ -37,10 +39,10 @@
 
                     <div class="text-start">
                         @foreach([
-                            ['mail', $customer->email, __('Email')],
-                            ['phone', $customer->phone, __('Phone')],
-                            ['map-pin', $customer->city, __('City')],
-                            ['calendar', $customer->created_at->format('M d, Y'), __('Joined')],
+                        ['mail', $customer->email, __('Email')],
+                        ['phone', $customer->phone, __('Phone')],
+                        ['map-pin', $customer->city, __('City')],
+                        ['calendar', $customer->created_at->format('M d, Y'), __('Joined')],
                         ] as [$icon, $value, $label])
                         <div class="d-flex align-items-start gap-3 mb-3">
                             <div class="info-icon">
@@ -88,7 +90,7 @@
 
             <div class="card border" style="border-color:#dee2e6 !important; border-radius:6px;">
                 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3 px-4"
-                     style="border-color:#dee2e6 !important;">
+                    style="border-color:#dee2e6 !important;">
                     <span class="fw-semibold small text-dark">{{ __('Recent Orders') }}</span>
                     <i data-lucide="receipt" class="text-muted" style="width:16px;"></i>
                 </div>
@@ -114,13 +116,13 @@
                                 <td class="px-4 py-3 text-end fw-semibold">${{ number_format($order->total_amount, 2) }}</td>
                                 <td class="px-4 py-3 text-center">
                                     @php
-                                        $cls = match($order->status) {
-                                            'completed' => 'bg-success-subtle text-success',
-                                            'pending'   => 'bg-warning-subtle text-warning',
-                                            'cooking'   => 'bg-primary-subtle text-primary',
-                                            'cancelled' => 'bg-danger-subtle text-danger',
-                                            default     => 'bg-secondary-subtle text-secondary'
-                                        };
+                                    $cls = match($order->status) {
+                                    'completed' => 'bg-success-subtle text-success',
+                                    'pending' => 'bg-warning-subtle text-warning',
+                                    'cooking' => 'bg-primary-subtle text-primary',
+                                    'cancelled' => 'bg-danger-subtle text-danger',
+                                    default => 'bg-secondary-subtle text-secondary'
+                                    };
                                     @endphp
                                     <span class="badge {{ $cls }}" style="font-size:0.72rem; text-transform:uppercase;">{{ $order->status }}</span>
                                 </td>
@@ -139,15 +141,38 @@
 </div>
 
 <style>
-    body { background-color: #f8fafc !important; }
-    .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }
-    .btn-primary:hover { background-color: #0b5ed7; color: #fff; }
-    .btn-outline-secondary { border-radius: 4px; font-size: 0.875rem; }
+    body {
+        background-color: #f8fafc !important;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        color: #fff;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+
     .info-icon {
-        width: 28px; height: 28px; border-radius: 4px;
-        background: #f1f3f5; border: 1px solid #e9ecef;
-        display: flex; align-items: center; justify-content: center;
-        color: #6c757d; flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        background: #f1f3f5;
+        border: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        flex-shrink: 0;
     }
 </style>
 @endsection

@@ -35,7 +35,7 @@
     </div>
 
     <div class="navbar-right d-flex align-items-center gap-3">
-        @if(!$isPos && auth()->user()->role && in_array(auth()->user()->role->slug, ['administrator', 'cashier']))
+        @if(!$isPos)
         <a href="{{ route('pos.index') }}" class="pos-create-btn animate__animated animate__pulse animate__infinite">
             <i data-lucide="plus-circle"></i>
             <span>POS</span>

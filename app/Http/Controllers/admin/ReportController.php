@@ -60,7 +60,7 @@ class ReportController extends Controller
         ];
 
         // Paginate only for the table
-        $payments = $baseQuery->latest()->paginate(10);
+        $payments = $baseQuery->latest()->paginate(10)->withQueryString();
 
         // Chart Trend Calculation
         if ($period == 'today') {
@@ -153,14 +153,26 @@ class ReportController extends Controller
         $daysDiff = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
         $mainTrend = ($daysDiff > 60 && !$period) ? $monthlyTrend : $chartTrend;
 
-        return view('admin.reports.income', [
+        $viewData = [
             'payments' => $payments,
             'stats' => $stats,
             'startDate' => $startDate,
             'endDate' => $endDate,
             'mainTrend' => $mainTrend,
             'monthlyTrend' => $monthlyTrend,
-        ]);
+        ];
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.reports.partials.income_content', $viewData)->render(),
+                'chart' => [
+                    'labels' => $mainTrend->pluck('label'),
+                    'data' => $mainTrend->pluck('total')
+                ]
+            ]);
+        }
+
+        return view('admin.reports.income', $viewData);
     }
 
     public function exportExcel(Request $request)

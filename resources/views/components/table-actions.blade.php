@@ -4,29 +4,33 @@
     'viewRoute'   => null,
     'printRoute'  => null,
     'id'          => null,
-    'name'        => 'Item'
+    'name'        => 'Item',
+    'editPermission' => null,
+    'deletePermission' => null,
+    'viewPermission' => null,
+    'printPermission' => null
 ])
 
 <div class="d-flex justify-content-end gap-1 table-actions-wrapper">
-    @if($viewRoute)
+    @if($viewRoute && (!$viewPermission || auth()->user()->can($viewPermission)))
     <a href="{{ $viewRoute }}" class="ta-btn view-btn" title="{{ __('View Details') }}">
         <i data-lucide="eye" style="width:14px;height:14px;"></i>
     </a>
     @endif
 
-    @if($printRoute)
+    @if($printRoute && (!$printPermission || auth()->user()->can($printPermission)))
     <a href="{{ $printRoute }}" class="ta-btn print-btn" title="{{ __('Print Receipt') }}">
         <i data-lucide="printer" style="width:14px;height:14px;"></i>
     </a>
     @endif
 
-    @if($editRoute)
+    @if($editRoute && (!$editPermission || auth()->user()->can($editPermission)))
     <a href="{{ $editRoute }}" class="ta-btn edit-btn" title="{{ __('Edit') }}">
         <i data-lucide="pencil" style="width:14px;height:14px;"></i>
     </a>
     @endif
 
-    @if($deleteRoute)
+    @if($deleteRoute && (!$deletePermission || auth()->user()->can($deletePermission)))
     <button type="button" class="ta-btn delete-btn" title="{{ __('Delete') }}"
         onclick="confirmDelete('delete-form-{{ $id }}', '{{ addslashes($name) }}')">
         <i data-lucide="trash-2" style="width:14px;height:14px;"></i>

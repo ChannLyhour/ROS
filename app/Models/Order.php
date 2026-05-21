@@ -12,7 +12,7 @@ class Order extends Model
 
     protected $fillable = [
         'order_no', 'order_type', 'customer_id', 'user_id', 'table_id', 'notes', 
-        'status', 'subtotal', 'tax', 'total_amount'
+        'status', 'subtotal', 'tax', 'total_amount', 'create_by'
     ];
 
     public function customer()
@@ -23,6 +23,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'create_by');
     }
 
     public function diningTable()

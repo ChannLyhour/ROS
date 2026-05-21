@@ -7,9 +7,10 @@
     title="{{ __('Order Management') }}"
     subtitle="{{ __('Track and manage live customer orders and sales') }}"
     :createRoute="route('orders.create')"
+    createPermission="create-orders"
     createLabel="{{ __('New Order') }}"
     searchPlaceholder="{{ __('Search by Order ID...') }}"
-    :headers="['#', __('Order Details'), __('Type'), __('Amount'), __('Status'), __('Date'), __('Actions')]"
+    :headers="['#', __('Order Details'), __('Type'), __('Amount'), __('Status'), __('Date'), __('Created By'), __('Actions')]"
     :items="$orders">
     <!-- Filter Slot -->
     <x-slot name="filters">
@@ -89,11 +90,17 @@
             <div class="extra-small text-dark fw-bold">{{ $order->created_at->format('d M, Y') }}</div>
             <div class="extra-small text-muted">{{ $order->created_at->format('h:i A') }}</div>
         </td>
+        <td class="text-center">
+            <div class="fw-bold text-dark">{{ $order->createdBy->name ?? 'System' }}</div>
+        </td>
         <td class="text-end pe-4">
             <x-table-actions 
                 :editRoute="route('orders.edit', $order->id)" 
+                editPermission="edit-orders"
                 :viewRoute="route('orders.show', $order->id)" 
+                viewPermission="view-orders"
                 :deleteRoute="route('orders.destroy', $order->id)" 
+                deletePermission="delete-orders"
                 :id="$order->id" 
                 :name="$order->order_no" 
             />

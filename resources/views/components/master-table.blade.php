@@ -3,6 +3,7 @@
     'subtitle' => null,
     'createRoute' => null,
     'createLabel' => 'Add New',
+    'createPermission' => null,
     'searchPlaceholder' => 'Search items...',
     'headers' => [],
     'items' => null
@@ -233,10 +234,12 @@
 
             {{-- Create Button --}}
             @if($createRoute)
+            @if(!$createPermission || auth()->user()->can($createPermission))
             <a href="{{ $createRoute }}" class="mst-create-btn">
                 <i data-lucide="plus"></i>
                 <span>{{ $createLabel }}</span>
             </a>
+            @endif
             @endif
         </div>
     </div>

@@ -3,426 +3,190 @@
 @section('title', __('Income Report'))
 
 @section('content')
-<div class="reports-page p-3 p-md-4">
-    <!-- Header -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div>
-            <h2 class="fw-black mb-0 text-dark">{{ __('Business Intelligence') }}</h2>
-            <p class="text-muted small fw-bold mb-0 text-uppercase tracking-wider">{{ __('Financial Income & Analytics Report') }}</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button onclick="window.location.href='{{ route('reports.income.pdf', request()->all()) }}'" class="btn btn-white border px-4 py-2 d-flex align-items-center gap-2 rounded-lg shadow-sm">
-                <i data-lucide="file-text" class="text-danger" style="width: 18px;"></i>
-                <span>{{ __('Export PDF') }}</span>
-            </button>
-            <button onclick="window.location.href='{{ route('reports.income.excel', request()->all()) }}'" class="btn btn-white border px-4 py-2 d-flex align-items-center gap-2 rounded-lg shadow-sm">
-                <i data-lucide="file-spreadsheet" class="text-success" style="width: 18px;"></i>
-                <span>{{ __('Export Excel') }}</span>
-            </button>
-        </div>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0 text-dark">{{ __('Financial Income & Analytics Report') }}</h2>
     </div>
-
-    <!-- Filters -->
-    <div class="card border-0 filter-card rounded-lg mb-4">
-        <div class="card-body p-4">
-            <form action="{{ route('reports.income') }}" method="GET" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="extra-small fw-black text-muted text-uppercase mb-2">{{ __('Start Date') }}</label>
-                    <input type="date" name="start_date" class="form-control premium-field" value="{{ $startDate }}">
-                </div>
-                <div class="col-md-3">
-                    <label class="extra-small fw-black text-muted text-uppercase mb-2">{{ __('End Date') }}</label>
-                    <input type="date" name="end_date" class="form-control premium-field" value="{{ $endDate }}">
-                </div>
-                <div class="col-md-3">
-                    <label class="extra-small fw-black text-muted text-uppercase mb-2">{{ __('Payment Method') }}</label>
-                    <select name="method" class="form-select premium-field select2" data-placeholder="{{ __('All Methods') }}">
-                        <option value=""></option>
-                        <option value="cash" {{ request('method') == 'cash' ? 'selected' : '' }}>{{ __('Cash') }}</option>
-                        <option value="card" {{ request('method') == 'card' ? 'selected' : '' }}>{{ __('Card') }}</option>
-                        <option value="qr" {{ request('method') == 'qr' ? 'selected' : '' }}>{{ __('QR/KHQR') }}</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-warning bg-premium-orange flex-grow-1 py-2 fw-black rounded-lg shadow-sm text-uppercase text-white border-0">
-                            <i data-lucide="filter" class="me-2" style="width: 18px;"></i> {{ __('Update') }}
-                        </button>
-                        <a href="{{ route('reports.income') }}" class="btn btn-light border py-2 px-3 rounded-lg" title="{{ __('Reset Filters') }}">
-                            <i data-lucide="rotate-ccw" style="width: 18px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Key Stats -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-lg bg-premium-orange stat-card text-white p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3 text-white text-opacity-75">
-                    <span class="fw-bold extra-small text-uppercase">{{ __('Total Gross Income') }}</span>
-                    <i data-lucide="dollar-sign" style="width: 24px;"></i>
-                </div>
-                <h2 class="fw-black mb-1">${{ number_format($stats['total_income'], 2) }}</h2>
-                <p class="mb-0 small opacity-75">{{ __('From') }} {{ $stats['total_transactions'] }} {{ __('transactions') }}</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-lg bg-white stat-card p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3 text-muted">
-                    <span class="fw-bold extra-small text-uppercase">{{ __('Average Ticket') }}</span>
-                    <i data-lucide="trending-up" class="text-success" style="width: 24px;"></i>
-                </div>
-                <h2 class="fw-black mb-1 text-dark">${{ number_format($stats['avg_ticket'], 2) }}</h2>
-                <p class="mb-0 small text-muted">{{ __('Average spend per order') }}</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-lg bg-white stat-card p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3 text-muted">
-                    <span class="fw-bold extra-small text-uppercase">{{ __('Cash Ratio') }}</span>
-                    <i data-lucide="banknote" class="text-warning" style="width: 24px;"></i>
-                </div>
-                @php
-                $cash = $stats['by_method']['cash'] ?? 0;
-                $ratio = $stats['total_income'] > 0 ? ($cash / $stats['total_income']) * 100 : 0;
-                @endphp
-                <h2 class="fw-black mb-1 text-dark">{{ number_format($ratio, 1) }}%</h2>
-                <div class="progress" style="height: 6px;">
-                    <div class="progress-bar bg-warning" style="width: {{ $ratio }}%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Visualization & Chart Row -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-lg bg-white overflow-hidden">
-                <div class="card-header bg-white border-0 p-4 pb-0 d-flex flex-wrap justify-content-between align-items-center gap-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="p-2 bg-primary bg-opacity-10 rounded-lg text-primary">
-                            <i data-lucide="trending-up" style="width: 20px;"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-black mb-0">{{ __('Income Trend Analysis') }}</h5>
-                            <p class="text-muted small mb-0">{{ __('Financial Performance Overview') }}</p>
-                        </div>
-                    </div>
-                    <div class="d-flex bg-light p-1 rounded shadow-sm border" style="width: fit-content;">
-                        <a href="{{ route('reports.income', ['period' => 'today']) }}" class="btn btn-sm px-3 fw-bold {{ request('period') == 'today' ? 'bg-primary text-white shadow-sm' : 'text-muted border-0' }}">
-                            {{ __('Today') }}
-                        </a>
-                        <a href="{{ route('reports.income', ['period' => 'weekly']) }}" class="btn btn-sm px-3 fw-bold {{ request('period') == 'weekly' ? 'bg-primary text-white shadow-sm' : 'text-muted border-0' }}">
-                            {{ __('Weekly') }}
-                        </a>
-                        <a href="{{ route('reports.income', ['period' => 'monthly']) }}" class="btn btn-sm px-3 fw-bold {{ request('period') == 'monthly' ? 'bg-primary text-white shadow-sm' : 'text-muted border-0' }}">
-                            {{ __('Month') }}
-                        </a>
-                        <a href="{{ route('reports.income') }}" class="btn btn-sm px-3 fw-bold {{ !request('period') ? 'bg-primary text-white shadow-sm' : 'text-muted border-0' }}">
-                            {{ __('Custom Range') }}
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    <canvas id="incomeChart" height="280"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-lg bg-white h-100">
-                <div class="card-header bg-white border-0 p-4 pb-0">
-                    <h5 class="fw-black mb-0">{{ __('Payment Distribution') }}</h5>
-                    <p class="text-muted small">{{ __('Market share by method') }}</p>
-                </div>
-                <div class="card-body p-4">
-                    <ul class="list-group list-group-flush">
-                        @foreach($stats['by_method'] as $method => $amount)
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-dashed py-3">
-                            <div class="d-flex align-items-center gap-2 text-capitalize">
-                                <div class="p-2 rounded bg-light">
-                                    <i data-lucide="{{ $method == 'cash' ? 'banknote' : ($method == 'card' ? 'credit-card' : 'qr-code') }}" style="width: 16px;"></i>
-                                </div>
-                                <span class="fw-bold text-dark">{{ __(ucfirst($method)) }}</span>
-                            </div>
-                            <span class="fw-black">${{ number_format($amount, 2) }}</span>
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 12-Month Performance Summary Row -->
-    <div class="card border-0 shadow-sm rounded-lg bg-white mb-4">
-        <div class="card-header bg-white border-0 p-4 pb-0">
-            <h5 class="fw-black mb-0">{{ __('12-Month Performance Summary') }}</h5>
-            <p class="text-muted small">{{ __('Historical revenue ledger') }}</p>
-        </div>
-        <div class="card-body p-4">
-            <div class="row g-3">
-                @foreach($monthlyTrend->reverse() as $month)
-                <div class="col-md-3 col-sm-6">
-                    <div class="p-3 border rounded-lg bg-light bg-opacity-50 text-center">
-                        <div class="extra-small fw-black text-muted text-uppercase mb-1">{{ $month->label }}</div>
-                        <div class="h5 fw-black text-primary mb-0">${{ number_format($month->total, 2) }}</div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <!-- Transactions Table Row -->
-    <div class="card border-0 shadow-sm rounded-lg overflow-hidden">
-        <div class="card-header bg-white border-0 p-4">
-            <h5 class="fw-black mb-0">{{ __('Transaction Ledger') }}</h5>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="px-4 py-3 text-muted extra-small text-uppercase">{{ __('Date/Time') }}</th>
-                        <th class="py-3 text-muted extra-small text-uppercase">{{ __('Order #') }}</th>
-                        <th class="py-3 text-muted extra-small text-uppercase">{{ __('Customer') }}</th>
-                        <th class="py-3 text-muted extra-small text-uppercase">{{ __('Method') }}</th>
-                        <th class="py-3 text-muted extra-small text-uppercase text-end px-4">{{ __('Amount') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($payments as $payment)
-                    <tr>
-                        <td class="px-4 py-3">
-                            <div class="fw-bold text-dark">{{ $payment->paid_at->format('M d, Y') }}</div>
-                            <small class="text-muted">{{ $payment->paid_at->format('h:i A') }}</small>
-                        </td>
-                        <td><span class="badge bg-light text-dark border fw-bold">{{ $payment->order->order_no }}</span></td>
-                        <td class="fw-medium">{{ $payment->order->customer->name ?? __('Guest') }}</td>
-                        <td>
-                            <span class="badge {{ $payment->payment_method == 'cash' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary' }} badge-method text-uppercase extra-small">
-                                <i data-lucide="{{ $payment->payment_method == 'cash' ? 'banknote' : ($payment->payment_method == 'card' ? 'credit-card' : 'qr-code') }}" class="me-1" style="width: 12px;"></i>
-                                {{ __(strtoupper($payment->payment_method)) }}
-                            </span>
-                        </td>
-                        <td class="text-end px-4 fw-black text-dark">${{ number_format($payment->total_amount, 2) }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @if($payments->hasPages())
-        <div class="px-5 border-top">
-            <x-pagination :paginator="$payments" />
-        </div>
-        @endif
+    <div class="d-flex gap-2">
+        <button onclick="window.location.href='{{ route('reports.income.pdf', request()->all()) }}'" class="btn btn-outline-danger d-flex align-items-center gap-2">
+            <i data-lucide="file-text" style="width: 18px;"></i>
+            <span>{{ __('Export PDF') }}</span>
+        </button>
+        <button onclick="window.location.href='{{ route('reports.income.excel', request()->all()) }}'" class="btn btn-outline-success d-flex align-items-center gap-2">
+            <i data-lucide="file-spreadsheet" style="width: 18px;"></i>
+            <span>{{ __('Export Excel') }}</span>
+        </button>
     </div>
 </div>
 
-<style>
-    .reports-page {
-        font-family: 'Kantumruy Pro', sans-serif;
-        background: #f8fafc;
-        min-height: 100vh;
-    }
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form id="filter-form" action="{{ route('reports.income') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-12">
+                <label class="form-label small fw-bold">{{ __('Date Range') }}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i data-lucide="calendar" style="width: 16px;" class="text-muted"></i></span>
+                    <input type="text" id="reportrange" class="form-control" style="cursor: pointer;" readonly>
+                </div>
+                <input type="hidden" name="start_date" id="start_date" value="{{ $startDate }}">
+                <input type="hidden" name="end_date" id="end_date" value="{{ $endDate }}">
+            </div>
+        </form>
+    </div>
+</div>
 
-    .fw-black {
-        font-weight: 900 !important;
-    }
-
-    .extra-small {
-        font-size: 0.65rem;
-    }
-
-    .rounded-lg {
-        border-radius: 16px !important;
-    }
-
-    /* Premium Filter Card */
-    .filter-card {
-        background: white;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    }
-
-    .premium-field {
-        border: 2px solid #f1f5f9;
-        border-radius: 12px;
-        font-weight: 600;
-        height: 48px;
-        transition: 0.3s;
-    }
-
-    .premium-field:focus {
-        border-color: #f08913;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1);
-    }
-
-    /* Elevated Stat Cards */
-    .stat-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.03) !important;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-    }
-
-    .bg-premium-orange {
-        background: linear-gradient(135deg, #f08913 0%, #d97706 100%) !important;
-    }
-
-    /* Ledger Styling */
-    .table thead th {
-        background: #f8fafc;
-        border-bottom: 2px solid #edf2f7;
-        color: #64748b;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-    }
-
-    .table tbody tr {
-        transition: background 0.2s;
-    }
-
-    .table tbody tr:hover {
-        background-color: #fdfaf7 !important;
-    }
-
-    .badge-method {
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-    }
-
-    .btn-white {
-        background: white;
-        color: #1e293b;
-        font-weight: 700;
-        transition: 0.3s;
-    }
-
-    .btn-white:hover {
-        background: #f8fafc;
-        transform: translateY(-1px);
-    }
-
-    .tracking-wider {
-        letter-spacing: 0.1em;
-    }
-
-    .border-dashed {
-        border-bottom-style: dashed !important;
-        border-bottom-width: 2px !important;
-        border-bottom-color: #e2e8f0 !important;
-    }
-</style>
+<div id="report-content" style="transition: opacity 0.3s ease;">
+    @include('admin.reports.partials.income_content')
+</div>
 
 @push('js')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('incomeChart').getContext('2d');
-    const incomeData = {!! json_encode($mainTrend->pluck('total')) !!};
-    const labels = {!! json_encode($mainTrend->pluck('label')) !!};
+    $(function() {
+        var start = moment('{{ $startDate }}');
+        var end = moment('{{ $endDate }}');
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(240, 137, 19, 0.2)');
-    gradient.addColorStop(1, 'rgba(240, 137, 19, 0)');
+        function cb(start, end) {
+            $('#reportrange').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            $('#start_date').val(start.format('YYYY-MM-DD'));
+            $('#end_date').val(end.format('YYYY-MM-DD'));
+        }
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "{{ __('Gross Income') }}",
-                data: incomeData,
-                borderColor: '#f08913',
-                backgroundColor: gradient,
-                fill: true,
-                tension: 0.45,
-                borderWidth: 4,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#f08913',
-                pointBorderWidth: 3,
-                pointRadius: 5,
-                pointHoverRadius: 8,
-                pointHoverBackgroundColor: '#f08913',
-                pointHoverBorderColor: '#fff',
-                pointHoverBorderWidth: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+        cb(start, end);
+
+        // Fetch report on date change
+        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+            fetchReport();
+        });
+    });
+
+    let chartInstance = null;
+
+    function initChart(labels, data) {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(13, 110, 253, 0.2)'); // Primary color
+        gradient.addColorStop(1, 'rgba(13, 110, 253, 0)');
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "{{ __('Gross Income') }}",
+                    data: data,
+                    borderColor: '#0d6efd',
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.45,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#0d6efd',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#0d6efd',
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 },
-                tooltip: {
-                    backgroundColor: '#1e293b',
-                    padding: 12,
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    callbacks: {
-                        label: function(context) {
-                            return " {{ __('Sales') }}: $" + context.parsed.y.toLocaleString();
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        borderDash: [5, 5],
-                        color: '#e2e8f0'
-                    },
-                    ticks: {
-                        font: {
-                            weight: 'bold'
-                        },
-                        callback: value => '$' + value.toLocaleString()
-                    }
-                },
-                x: {
-                    grid: {
+                plugins: {
+                    legend: {
                         display: false
                     },
-                    ticks: {
-                        font: {
-                            weight: 'bold'
+                    tooltip: {
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return " {{ __('Sales') }}: $" + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            borderDash: [5, 5],
+                            color: '#e2e8f0'
+                        },
+                        ticks: {
+                            callback: value => '$' + value.toLocaleString()
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 }
-            },
-            animation: {
-                duration: 2000,
-                easing: 'easeInOutQuart',
-                delay: (context) => {
-                    let delay = 0;
-                    if (context.type === 'data' && context.mode === 'default' && !context.dropped) {
-                        delay = context.dataIndex * 100 + context.datasetIndex * 200;
-                        context.dropped = true;
-                    }
-                    return delay;
-                }
             }
-        }
+        });
+    }
+
+    function fetchReport(url = null) {
+        var fetchUrl = url || ('{{ route("reports.income") }}?' + $('#filter-form').serialize());
+
+        $('#report-content').css('opacity', '0.5');
+
+        $.ajax({
+            url: fetchUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                $('#report-content').html(res.html);
+                initChart(res.chart.labels, res.chart.data);
+                $('#report-content').css('opacity', '1');
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            },
+            error: function() {
+                $('#report-content').css('opacity', '1');
+                alert('{{ __("Failed to fetch report data. Please try again.") }}');
+            }
+        });
+    }
+
+    // Initial load
+    initChart({
+        !!json_encode($mainTrend - > pluck('label')) !!
+    }, {
+        !!json_encode($mainTrend - > pluck('total')) !!
+    });
+
+    // Hijack pagination links
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        fetchReport($(this).attr('href'));
     });
 </script>
 @endpush

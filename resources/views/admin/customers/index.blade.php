@@ -7,6 +7,7 @@
     title="{{ __('Customer Management') }}"
     subtitle="{{ __('Manage your clientele records, contact details and histories') }}"
     :createRoute="route('customers.create')"
+    createPermission="create-customers"
     createLabel="{{ __('Add Customer') }}"
     searchPlaceholder="{{ __('Search name, email or phone...') }}"
     :headers="[__('#'), __('Customer'), __('Email'), __('Phone'), __('Location'), __('Actions')]"
@@ -42,12 +43,17 @@
         </td>
         <td class="text-end pe-4" style="width:120px;">
             <div class="d-flex justify-content-end gap-1">
+                @can('view-customers')
                 <a href="{{ route('customers.show', $customer->id) }}" class="action-btn view-btn" title="{{ __('View') }}">
                     <i data-lucide="eye" style="width:14px;height:14px;"></i>
                 </a>
+                @endcan
+                @can('edit-customers')
                 <a href="{{ route('customers.edit', $customer->id) }}" class="action-btn edit-btn" title="{{ __('Edit') }}">
                     <i data-lucide="pencil" style="width:14px;height:14px;"></i>
                 </a>
+                @endcan
+                @can('delete-customers')
                 <button type="button" class="action-btn delete-btn" title="{{ __('Delete') }}"
                         onclick="confirmDelete('delete-form-{{ $customer->id }}', '{{ $customer->name }}')">
                     <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
@@ -56,6 +62,7 @@
                     @csrf
                     @method('DELETE')
                 </form>
+                @endcan
             </div>
         </td>
     </tr>

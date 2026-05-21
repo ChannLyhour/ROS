@@ -10,9 +10,11 @@
             <h2 class="fw-semibold mb-0" style="font-size:1.25rem; color:#212529;">{{ __('System Settings') }}</h2>
             <p class="text-muted small mb-0">{{ __("Configure your restaurant's global parameters") }}</p>
         </div>
+        @can('manage-settings')
         <button type="submit" form="settingsForm" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2">
             <i data-lucide="save" style="width:15px;"></i>{{ __('Save All Settings') }}
         </button>
+        @endcan
     </div>
 
     <form id="settingsForm" action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">

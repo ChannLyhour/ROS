@@ -28,9 +28,9 @@
                         <div class="border rounded p-3 mb-3" style="border-color:#dee2e6 !important; border-radius:6px;">
                             <label class="form-label fw-semibold small text-dark mb-2">{{ __('Current Status') }}</label>
                             <select name="status" class="form-select form-select-sm select2" style="border-radius:4px;">
-                                <option value="available" {{ $table->status == 'available' ? 'selected' : '' }}>{{ __('Available') }}</option>
-                                <option value="occupied"  {{ $table->status == 'occupied'  ? 'selected' : '' }}>{{ __('Occupied') }}</option>
-                                <option value="reserved"  {{ $table->status == 'reserved'  ? 'selected' : '' }}>{{ __('Reserved') }}</option>
+                                <option value="{{ __('Available') }}" {{ $table->status == __('Available') ? 'selected' : '' }}>{{ __('Available') }}</option>
+                                <option value="{{ __('Taken') }}"  {{ $table->status == __('Taken')  ? 'selected' : '' }}>{{ __('Taken') }}</option>
+                                <option value="{{ __('Reserved') }}"  {{ $table->status == __('Reserved')  ? 'selected' : '' }}>{{ __('Reserved') }}</option>
                             </select>
                         </div>
                         <div class="p-3 bg-light border rounded small text-muted" style="border-color:#dee2e6 !important; border-radius:6px;">

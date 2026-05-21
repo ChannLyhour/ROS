@@ -10,6 +10,7 @@
             <h2 class="fw-semibold mb-0" style="font-size:1.25rem; color:#212529;">{{ __('System Backups') }}</h2>
             <p class="text-muted small mb-0">{{ __('Manage and download database backups') }}</p>
         </div>
+        @can('manage-backups')
         <form action="{{ route('backups.create') }}" method="POST" id="backupForm" onsubmit="showProcessing()">
             @csrf
             <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-4 py-2" id="backupBtn">
@@ -18,6 +19,7 @@
                 <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
             </button>
         </form>
+        @endcan
     </div>
 
     <div class="card border" style="border-color:#dee2e6 !important; border-radius:6px;">
@@ -65,6 +67,7 @@
                                     <a href="{{ $backup['download_link'] }}" class="action-btn dl-btn" title="{{ __('Download') }}">
                                         <i data-lucide="download" style="width:14px;height:14px;"></i>
                                     </a>
+                                    @can('manage-backups')
                                     <form action="{{ route('backups.destroy') }}" method="POST"
                                           onsubmit="return confirm('{{ __('Delete this backup?') }}')">
                                         @csrf
@@ -75,6 +78,7 @@
                                             <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
                                         </button>
                                     </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

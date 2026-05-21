@@ -73,7 +73,7 @@ class MenuItemController extends Controller
      */
     public function show(MenuItem $menu)
     {
-        $this->authorize('view', $menuItem);
+        $this->authorize('view', $menu);
         return view('admin.menu.show', ['menuItem' => $menu]);
     }
 
@@ -82,7 +82,7 @@ class MenuItemController extends Controller
      */
     public function edit(MenuItem $menu)
     {
-        $this->authorize('update', $menuItem);
+        $this->authorize('update', $menu);
         $categories = Category::all();
         return view('admin.menu.edit', ['menuItem' => $menu, 'categories' => $categories]);
     }
@@ -92,7 +92,7 @@ class MenuItemController extends Controller
      */
     public function update(Request $request, MenuItem $menu)
     {
-        $this->authorize('update', $menuItem);
+        $this->authorize('update', $menu);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -117,7 +117,7 @@ class MenuItemController extends Controller
      */
     public function destroy(MenuItem $menu)
     {
-        $this->authorize('delete', $menuItem);
+        $this->authorize('delete', $menu);
         if ($menu->image) {
             UploadImageHelper::delete($menu->image);
         }

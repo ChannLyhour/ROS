@@ -7,6 +7,7 @@
     title="{{ __('Roles & Permissions') }}"
     subtitle="{{ __('Define access hierarchies and system permission profiles') }}"
     :createRoute="route('roles.create')"
+    createPermission="create-roles"
     createLabel="{{ __('Create Role') }}"
     :headers="['#', __('Role'), __('Permissions'), __('Staff'), __('Actions')]"
     :items="$roles">
@@ -41,7 +42,9 @@
         <td class="text-end pe-4" style="width:100px;">
             <x-table-actions
                 :editRoute="route('roles.edit', $role->id)"
+                editPermission="edit-roles"
                 :deleteRoute="route('roles.destroy', $role->id)"
+                deletePermission="delete-roles"
                 :id="$role->id"
                 :name="$role->name" />
         </td>

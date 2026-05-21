@@ -76,7 +76,7 @@ class NavigationHelper
                         'route' => 'kitchen.index',
                         'icon' => 'flame',
                         'activePattern' => 'kitchen.*',
-                        'visible' => true, // Everyone can see
+                        'visible' => $user->can('view-kitchen'),
                     ],
                 ],
             ],

@@ -7,6 +7,7 @@
     title="{{ __('Table Management') }}"
     subtitle="{{ __('Organize your dining area and track occupancy') }}"
     :createRoute="route('tables.create')"
+    createPermission="create-tables"
     createLabel="{{ __('Add Table') }}"
     searchPlaceholder="{{ __('Search by table name...') }}"
     :headers="['#', __('Table'), __('Capacity'), __('Status'), __('Actions')]"
@@ -16,9 +17,9 @@
         <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 m-0 align-items-center">
             <select name="status" class="form-select form-select-sm select2" onchange="this.form.submit()" style="min-width:130px; border-radius:4px;">
                 <option value="">{{ __('All Statuses') }}</option>
-                <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>{{ __('Available') }}</option>
-                <option value="occupied"  {{ request('status') == 'occupied'  ? 'selected' : '' }}>{{ __('Occupied') }}</option>
-                <option value="reserved"  {{ request('status') == 'reserved'  ? 'selected' : '' }}>{{ __('Reserved') }}</option>
+                <option value="{{ __('Available') }}" {{ request('status') == __('Available') ? 'selected' : '' }}>{{ __('Available') }}</option>
+                <option value="{{ __('Taken') }}"  {{ request('status') == __('Taken')  ? 'selected' : '' }}>{{ __('Taken') }}</option>
+                <option value="{{ __('Reserved') }}"  {{ request('status') == __('Reserved')  ? 'selected' : '' }}>{{ __('Reserved') }}</option>
             </select>
             @if(request()->anyFilled(['search', 'status']))
             <a href="{{ route('tables.index') }}" class="action-btn reset-btn" title="{{ __('Clear Filters') }}">
@@ -31,11 +32,11 @@
     @forelse($tables as $table)
     @php
     $statusMap = [
-        'available' => ['class' => 'available', 'icon' => 'check-circle'],
-        'occupied'  => ['class' => 'occupied',  'icon' => 'user-minus'],
-        'reserved'  => ['class' => 'reserved',  'icon' => 'clock'],
+        __('Available') => ['class' => 'available', 'icon' => 'check-circle'],
+        __('Taken')     => ['class' => 'taken',     'icon' => 'user-minus'],
+        __('Reserved')  => ['class' => 'reserved',  'icon' => 'clock'],
     ];
-    $s = $statusMap[$table->status] ?? $statusMap['available'];
+    $s = $statusMap[$table->status] ?? $statusMap[__('Available')];
     @endphp
     <tr>
         <td class="text-center" style="width:50px;">
@@ -67,8 +68,11 @@
         <td class="text-end pe-4" style="width:120px;">
             <x-table-actions
                 :editRoute="route('tables.edit', $table->id)"
+                editPermission="edit-tables"
                 :viewRoute="route('tables.show', $table->id)"
+                viewPermission="view-tables"
                 :deleteRoute="route('tables.destroy', $table->id)"
+                deletePermission="delete-tables"
                 :id="$table->id"
                 :name="$table->name" />
         </td>
@@ -113,8 +117,8 @@
     .status-badge .status-dot { width: 7px; height: 7px; border-radius: 50%; }
     .status-badge.available { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .status-badge.available .status-dot { background: #22c55e; }
-    .status-badge.occupied  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-    .status-badge.occupied .status-dot  { background: #ef4444; }
+    .status-badge.taken     { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-badge.taken .status-dot     { background: #ef4444; }
     .status-badge.reserved  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .status-badge.reserved .status-dot  { background: #f59e0b; }
     .action-btn {

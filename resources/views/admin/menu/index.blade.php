@@ -7,6 +7,7 @@
     title="{{ __('Menu Management') }}"
     subtitle="{{ __('Coordinate your culinary collection and service availability') }}"
     :createRoute="route('menu.create')"
+    createPermission="create-menu"
     createLabel="{{ __('Add Item') }}"
     searchPlaceholder="{{ __('Search by name or description...') }}"
     :headers="[__('#'), __('Image'), __('Name'), __('Category'), __('Price'), __('Status'), __('Actions')]"
@@ -58,12 +59,17 @@
         </td>
         <td class="text-end pe-4" style="width:120px;">
             <div class="d-flex justify-content-end gap-1">
+                @can('view-menu')
                 <a href="{{ route('menu.show', $item->id) }}" class="action-btn view-btn" title="{{ __('View') }}">
                     <i data-lucide="eye" style="width:14px;height:14px;"></i>
                 </a>
+                @endcan
+                @can('edit-menu')
                 <a href="{{ route('menu.edit', $item->id) }}" class="action-btn edit-btn" title="{{ __('Edit') }}">
                     <i data-lucide="pencil" style="width:14px;height:14px;"></i>
                 </a>
+                @endcan
+                @can('delete-menu')
                 <button type="button" class="action-btn delete-btn" title="{{ __('Delete') }}"
                         onclick="confirmDelete('delete-form-{{ $item->id }}', '{{ $item->name }}')">
                     <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
@@ -72,6 +78,7 @@
                     @csrf
                     @method('DELETE')
                 </form>
+                @endcan
             </div>
         </td>
     </tr>

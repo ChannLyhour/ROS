@@ -10,9 +10,11 @@
             <p class="text-muted small mb-0">{{ __('Viewing') }}: <strong>{{ $table->name }}</strong></p>
         </div>
         <div class="d-flex gap-2">
+            @can('edit-tables')
             <a href="{{ route('tables.edit', $table->id) }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2 px-3">
                 <i data-lucide="pencil" style="width:15px;"></i>{{ __('Edit') }}
             </a>
+            @endcan
             <a href="{{ route('tables.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
                 <i data-lucide="arrow-left" style="width:15px;"></i>{{ __('Back') }}
             </a>
@@ -34,9 +36,9 @@
                         <div class="mt-3">
                             @php
                             $s = match($table->status) {
-                                'occupied'  => ['occupied',  __('Occupied')],
-                                'reserved'  => ['reserved',  __('Reserved')],
-                                default     => ['available', __('Available')],
+                                __('Taken')  => ['taken',  __('Taken')],
+                                __('Reserved')  => ['reserved',  __('Reserved')],
+                                default         => ['available', __('Available')],
                             };
                             @endphp
                             <span class="status-badge {{ $s[0] }}">
@@ -72,6 +74,7 @@
                     </div>
 
                     <div class="pt-3 border-top d-flex gap-2">
+                        @can('delete-tables')
                         <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2 px-4 py-2"
                                 onclick="confirmDelete('delete-form-{{ $table->id }}', '{{ $table->name }}')">
                             <i data-lucide="trash-2" style="width:14px;"></i>
@@ -80,6 +83,7 @@
                         <form id="delete-form-{{ $table->id }}" action="{{ route('tables.destroy', $table->id) }}" method="POST" class="d-none">
                             @csrf @method('DELETE')
                         </form>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -104,8 +108,8 @@
     .status-badge .status-dot { width: 7px; height: 7px; border-radius: 50%; }
     .status-badge.available { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .status-badge.available .status-dot { background: #22c55e; }
-    .status-badge.occupied  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-    .status-badge.occupied .status-dot  { background: #ef4444; }
+    .status-badge.taken     { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-badge.taken .status-dot     { background: #ef4444; }
     .status-badge.reserved  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .status-badge.reserved .status-dot  { background: #f59e0b; }
     .btn-primary { background-color: #0d6efd; border-color: #0d6efd; border-radius: 4px; font-size: 0.875rem; }

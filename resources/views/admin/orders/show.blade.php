@@ -15,10 +15,12 @@
                 <span class="d-inline d-sm-none">{{ __('Back') }}</span>
             </a>
             @if($order->status == 'pending')
+            @can('edit-orders')
             <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-orange px-3 px-sm-4 py-2 d-flex align-items-center gap-2 rounded-lg shadow-sm">
                 <i data-lucide="edit" style="width: 18px;"></i>
                 <span>{{ __('Add Items / Checkout') }}</span>
             </a>
+            @endcan
             @endif
             <button type="button" class="btn btn-white border px-3 px-sm-4 py-2 d-flex align-items-center gap-2 shadow-sm" onclick="window.print()">
                 <i data-lucide="printer" style="width: 16px;"></i>
@@ -126,6 +128,7 @@
                                 </button>
                             </div>
                             @else
+                            @can('edit-orders')
                             <form action="{{ route('orders.update-status', $order->id) }}" method="POST" class="flex-grow-1">
                                 @csrf
                                 @method('PATCH')
@@ -138,6 +141,7 @@
                                     <span class="extra-small fw-black text-uppercase">{{ $data['label'] }}</span>
                                 </button>
                             </form>
+                            @endcan
                             @endif
                             @endforeach
                         </div>

@@ -47,6 +47,7 @@ class OrderService
         return Order::create(array_merge($attributes, [
             'order_no' => SystemHelper::generateOrderNo(),
             'user_id' => auth()->id() ?? 1,
+            'create_by' => auth()->id() ?? 1,
             'status' => 'pending',
         ]));
     }

@@ -7,6 +7,7 @@
     title="{{ __('Translations') }}"
     subtitle="{{ __('Manage multilingual key-value pairs for your application') }}"
     :createRoute="route('translations.create')"
+    createPermission="manage-translations"
     createLabel="{{ __('Add Translation') }}"
     searchPlaceholder="{{ __('Search by key or text...') }}"
     :headers="['#', __('Group'), __('Key'), __('English'), __('Khmer'), __('Actions')]"
@@ -32,7 +33,9 @@
         <td class="text-end pe-4" style="width:100px;">
             <x-table-actions
                 :editRoute="route('translations.edit', $item->id)"
+                editPermission="manage-translations"
                 :deleteRoute="route('translations.destroy', $item->id)"
+                deletePermission="manage-translations"
                 :id="$item->id"
                 :name="$item->key" />
         </td>

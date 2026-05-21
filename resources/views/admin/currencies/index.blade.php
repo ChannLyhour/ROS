@@ -7,6 +7,7 @@
     title="{{ __('Currency Management') }}"
     subtitle="{{ __('Configure financial symbols and operational status for your platform') }}"
     :createRoute="route('currencies.create')"
+    createPermission="manage-settings"
     createLabel="{{ __('Add Currency') }}"
     searchPlaceholder="{{ __('Search by name or symbol...') }}"
     :headers="[__('#'), __('Name'), __('Symbol'), __('Status'), __('Actions')]"
@@ -37,6 +38,7 @@
         </td>
         <td class="text-end pe-4" style="width:100px;">
             <div class="d-flex justify-content-end gap-1">
+                @can('manage-settings')
                 <a href="{{ route('currencies.edit', $currency->id) }}" class="action-btn edit-btn" title="{{ __('Edit') }}">
                     <i data-lucide="pencil" style="width:14px;height:14px;"></i>
                 </a>
@@ -44,6 +46,7 @@
                         onclick="confirmDelete('delete-form-{{ $currency->id }}', '{{ $currency->name }}')">
                     <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
                 </button>
+                @endcan
                 <form id="delete-form-{{ $currency->id }}" action="{{ route('currencies.destroy', $currency->id) }}" method="POST" class="d-none">
                     @csrf
                     @method('DELETE')
