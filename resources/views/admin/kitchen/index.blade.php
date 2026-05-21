@@ -18,13 +18,13 @@
 
 <x-master-table 
     title="{{ __('Kitchen Display System') }}" 
-    subtitle="{{ __('Live Order Preparation Queue') }}"
-    searchPlaceholder="{{ __('Search orders...') }}"
+    subtitle="{{ __('Live Item Preparation Queue') }}"
+    searchPlaceholder="{{ __('Search items...') }}"
     :headers="[
         ['text' => __('Order No'), 'align' => 'start'],
         ['text' => __('Type'), 'align' => 'start'],
         ['text' => __('Time'), 'align' => 'start'],
-        ['text' => __('Items'), 'align' => 'start'],
+        ['text' => __('Item'), 'align' => 'start'],
         ['text' => __('Notes'), 'align' => 'start'],
         ['text' => __('Status'), 'align' => 'center'],
         ['text' => __('Actions'), 'align' => 'end']
@@ -43,10 +43,10 @@
                 {{ __('Pending') }} ({{ $counts['pending'] }})
             </a>
             <a href="{{ route('kitchen.index', ['status' => 'preparing']) }}" class="btn btn-sm {{ $status === 'preparing' ? 'btn-primary' : 'btn-outline-secondary' }}">
-                {{ __('Preparing') }} ({{ $counts['preparing'] }})
+                {{ __('Cooking') }} ({{ $counts['preparing'] }})
             </a>
             <a href="{{ route('kitchen.index', ['status' => 'ready']) }}" class="btn btn-sm {{ $status === 'ready' ? 'btn-primary' : 'btn-outline-secondary' }}">
-                {{ __('Ready') }} ({{ $counts['ready'] }})
+                {{ __('Done') }} ({{ $counts['ready'] }})
             </a>
             <a href="{{ route('kitchen.index', ['status' => 'late']) }}" class="btn btn-sm {{ $status === 'late' ? 'btn-danger' : 'btn-outline-danger' }}">
                 {{ __('Delayed') }} ({{ $counts['late'] }})
@@ -54,30 +54,39 @@
         </div>
     </x-slot>
 
-    @forelse($orders as $order)
+    @forelse($orders as $kitchenOrder)
     <tr>
-        <td class="fw-bold text-primary">#{{ $order->order_no }}</td>
+        <td class="fw-bold text-primary">
+            #{{ $kitchenOrder->order->order_no ?? '---' }}
+            <div class="mt-1">
+                @if($kitchenOrder->order && $kitchenOrder->order->payment && $kitchenOrder->order->payment->status === 'paid')
+                    <span class="badge bg-success text-white px-2 py-1 rounded-3 small fw-bold d-inline-flex align-items-center gap-1" style="font-size: 0.65rem;">
+                        <i data-lucide="check-circle" style="width: 10px; height: 10px;"></i>
+                        {{ __('PAID') }}
+                    </span>
+                @else
+                    <span class="badge bg-warning text-dark px-2 py-1 rounded-3 small fw-bold d-inline-flex align-items-center gap-1" style="font-size: 0.65rem;">
+                        <i data-lucide="clock" style="width: 10px; height: 10px;"></i>
+                        {{ __('UNPAID') }}
+                    </span>
+                @endif
+            </div>
+        </td>
         <td>
             <span class="badge bg-light text-dark border">
-                {{ $order->diningTable->name ?? __('Takeaway') }}
+                {{ $kitchenOrder->order->diningTable->name ?? $kitchenOrder->order->order_type ?? __('Takeaway') }}
             </span>
         </td>
         <td class="text-muted small">
-            {{ $order->created_at->diffForHumans() }}
+            {{ $kitchenOrder->created_at->diffForHumans() }}
         </td>
         <td>
-            <ul class="list-unstyled mb-0 small">
-                @foreach($order->items as $item)
-                <li>
-                    <span class="fw-bold">{{ $item->quantity }}x</span> {{ $item->menuItem->name ?? '---' }}
-                </li>
-                @endforeach
-            </ul>
+            <span class="fw-bold">{{ $kitchenOrder->quantity }}x</span> {{ $kitchenOrder->item_name }}
         </td>
         <td style="max-width: 200px;">
-            @if($order->notes)
-            <div class="text-truncate small text-warning-emphasis fw-bold" title="{{ $order->notes }}">
-                <i data-lucide="info" style="width: 14px;"></i> {{ $order->notes }}
+            @if($kitchenOrder->notes)
+            <div class="text-truncate small text-warning-emphasis fw-bold" title="{{ $kitchenOrder->notes }}">
+                <i data-lucide="info" style="width: 14px;"></i> {{ $kitchenOrder->notes }}
             </div>
             @else
             <span class="text-muted small">--</span>
@@ -85,44 +94,44 @@
         </td>
         <td class="text-center">
             @php
-                $statusClass = match($order->status) {
+                $statusClass = match($kitchenOrder->cooking_status) {
                     'pending' => 'bg-warning text-dark',
-                    'preparing' => 'bg-primary text-white',
-                    'ready' => 'bg-success text-white',
+                    'cooking' => 'bg-primary text-white',
+                    'done' => 'bg-success text-white',
                     default => 'bg-secondary text-white'
                 };
             @endphp
             <span class="badge {{ $statusClass }} text-uppercase">
-                {{ $order->status }}
+                {{ $kitchenOrder->cooking_status }}
             </span>
         </td>
         <td class="text-end pe-4">
             <div class="d-flex gap-2 justify-content-end align-items-center">
-                <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#noteModal{{ $order->id }}" title="{{ __('Edit Note') }}">
+                <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#noteModal{{ $kitchenOrder->id }}" title="{{ __('Edit Note') }}">
                     <i data-lucide="message-square" style="width: 14px;"></i>
                 </button>
 
-                @if($order->status == 'pending')
-                <form action="{{ route('orders.update-status', $order->id) }}" method="POST" class="m-0">
+                @if($kitchenOrder->cooking_status == 'pending')
+                <form action="{{ route('kitchen.update-status', $kitchenOrder->id) }}" method="POST" class="m-0">
                     @csrf
                     @method('PATCH')
-                    <input type="hidden" name="status" value="preparing">
+                    <input type="hidden" name="status" value="cooking">
                     <button type="submit" class="btn btn-sm btn-primary fw-bold text-uppercase" style="font-size: 0.75rem;">
                         {{ __('Start') }}
                     </button>
                 </form>
-                @elseif($order->status == 'preparing')
-                <form action="{{ route('orders.update-status', $order->id) }}" method="POST" class="m-0">
+                @elseif($kitchenOrder->cooking_status == 'cooking')
+                <form action="{{ route('kitchen.update-status', $kitchenOrder->id) }}" method="POST" class="m-0">
                     @csrf
                     @method('PATCH')
-                    <input type="hidden" name="status" value="ready">
+                    <input type="hidden" name="status" value="done">
                     <button type="submit" class="btn btn-sm btn-success fw-bold text-uppercase" style="font-size: 0.75rem;">
                         {{ __('Ready') }}
                     </button>
                 </form>
                 @else
                 <span class="text-success small fw-bold">
-                    <i data-lucide="check" style="width: 14px;"></i> {{ __('Waiting') }}
+                    <i data-lucide="check" style="width: 14px;"></i> {{ __('Completed') }}
                 </span>
                 @endif
             </div>
@@ -130,18 +139,18 @@
     </tr>
 
     <!-- Note Modal -->
-    <div class="modal fade" id="noteModal{{ $order->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="noteModal{{ $kitchenOrder->id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-sm">
-                <form action="{{ route('kitchen.update-note', $order->id) }}" method="POST">
+                <form action="{{ route('kitchen.update-note', $kitchenOrder->id) }}" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold">{{ __('Order') }} #{{ $order->order_no }} {{ __('Note') }}</h5>
+                        <h5 class="modal-title fw-bold">{{ __('Kitchen Item Note') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
                     </div>
                     <div class="modal-body">
-                        <label class="form-label small fw-bold text-muted">{{ __('Kitchen Instructions / Customer Notes') }}</label>
-                        <textarea name="notes" class="form-control" rows="4" placeholder="{{ __('Type instructions here...') }}">{{ $order->notes }}</textarea>
+                        <label class="form-label small fw-bold text-muted">{{ __('Instructions for') }} {{ $kitchenOrder->item_name }}</label>
+                        <textarea name="notes" class="form-control" rows="4" placeholder="{{ __('Type instructions here...') }}">{{ $kitchenOrder->notes }}</textarea>
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
@@ -158,7 +167,7 @@
                 <i data-lucide="check-circle" style="width: 48px; height: 48px; opacity: 0.5;"></i>
             </div>
             <h5 class="fw-bold mb-1">{{ __('Kitchen Clear!') }}</h5>
-            <p class="small mb-0">{{ __('No active orders currently pending.') }}</p>
+            <p class="small mb-0">{{ __('No active kitchen items currently pending.') }}</p>
         </td>
     </tr>
     @endforelse

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Http\Requests\StoreOrderRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller

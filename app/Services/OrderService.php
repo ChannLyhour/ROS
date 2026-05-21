@@ -85,6 +85,20 @@ class OrderService
 
         OrderItem::insert($itemsToInsert);
 
+        // Populate/Sync kitchen_orders table for KDS
+        $order->kitchenOrders()->delete();
+        foreach ($items as $itemData) {
+            $menuItem = $menuItems->get($itemData['menu_item_id']);
+            if (!$menuItem) continue;
+
+            $order->kitchenOrders()->create([
+                'item_name' => $menuItem->name,
+                'quantity' => $itemData['quantity'],
+                'cooking_status' => 'pending',
+                'notes' => $order->notes
+            ]);
+        }
+
         $taxRate = (float) SystemHelper::getSetting('tax_percentage', 10) / 100;
         $tax = $total * $taxRate;
 

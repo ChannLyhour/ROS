@@ -145,6 +145,15 @@
 
             {{-- Action Buttons --}}
             <div class="p-4 border-top bg-light mt-auto">
+                @if(isset($existingOrder) && $existingOrder)
+                <div class="mb-2">
+                    <a href="{{ route('orders.show', $existingOrder->id) }}"
+                       class="btn btn-outline-secondary w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2">
+                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                        <span class="small text-uppercase">{{ __('View Order #') }}{{ $existingOrder->order_no }}</span>
+                    </a>
+                </div>
+                @endif
                 <div class="row g-2">
                     <div class="col-6">
                         <button type="button" id="ppSaveLaterBtn"

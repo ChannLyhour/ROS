@@ -340,11 +340,11 @@
                         showToast(isPaid ? "{{ __('Order completed successfully!') }}" : "{{ __('Order saved to draft successfully!') }}", 'success');
                     }
                     
-                    // Redirect to receipt or orders list after a brief delay
-                    const receiptUrlPattern = "{{ route('orders.receipt', ':id') }}";
+                    // Redirect to order show page or orders list after a brief delay
+                    const orderShowBaseUrl = "{{ url('/orders') }}/";
                     setTimeout(function () {
                         if (isPaid) {
-                            window.location.href = receiptUrlPattern.replace(':id', result.order_id);
+                            window.location.href = orderShowBaseUrl + result.order_id;
                         } else {
                             window.location.href = "{{ route('orders.index') }}";
                         }

@@ -92,8 +92,10 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'No payment found for this order.');
         }
 
-        $payment->load(['order.items.menuItem', 'order.customer', 'order.diningTable', 'order.user']);
-        return view('admin.receipts.invoice', compact('payment'));
+        $payment->load(['order.items.menuItem.category', 'order.customer', 'order.diningTable', 'order.user']);
+        $appSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
+
+        return view('admin.receipts.invoice', compact('payment', 'appSettings'));
     }
 
     /**

@@ -44,4 +44,9 @@ class Order extends Model
     {
         return $this->hasOne(Payment::class);
     }
+
+    public function kitchenOrders()
+    {
+        return $this->hasMany(KitchenOrder::class);
+    }
 }

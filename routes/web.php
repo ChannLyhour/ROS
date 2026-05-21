@@ -78,7 +78,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Kitchen KDS
     Route::get('kitchen', [KitchenController::class, 'index'])->name('kitchen.index');
-    Route::post('kitchen/order/{order}/note', [KitchenController::class, 'updateNote'])->name('kitchen.update-note');
+    Route::post('kitchen/order/{kitchenOrder}/note', [KitchenController::class, 'updateNote'])->name('kitchen.update-note');
+    Route::patch('kitchen/order/{kitchenOrder}/status', [KitchenController::class, 'updateStatus'])->name('kitchen.update-status');
     Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
     // POS, Orders, Tables, etc.

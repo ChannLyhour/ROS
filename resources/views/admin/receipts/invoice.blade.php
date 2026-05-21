@@ -23,7 +23,10 @@
         .print-button-container {
             text-align: center;
             margin-bottom: 30px;
-            no-print: true;
+        }
+
+        .no-print {
+            /* shown on screen, hidden when printing */
         }
 
         .btn-print {
@@ -343,8 +346,9 @@
                 padding: 0;
             }
 
+            .no-print,
             .print-button-container {
-                display: none;
+                display: none !important;
             }
 
             .receipt-wrapper {
@@ -365,7 +369,17 @@
 </head>
 <body>
     <div class="print-button-container no-print">
-        <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <a href="{{ route('orders.index') }}"
+               style="padding: 10px 24px; background: #6c757d; color: white; border: none; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                ← {{ __('Back to Orders') }}
+            </a>
+            <a href="{{ route('orders.show', $payment->order->id) }}"
+               style="padding: 10px 24px; background: #0d6efd; color: white; border: none; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                🔍 {{ __('View Order') }} #{{ $payment->order->order_no }}
+            </a>
+            <button class="btn-print" onclick="window.print()">🖨️ {{ __('Print Receipt') }}</button>
+        </div>
     </div>
 
     <div class="receipt-wrapper">
@@ -442,8 +456,8 @@
                                 <div class="item-name">{{ $item->menuItem->name }}</div>
                                 <div class="item-category">{{ $item->menuItem->category->name ?? '' }}</div>
                             </td>
-                            <td class="text-right">{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($item->price, 2) }}</td>
-                            <td class="text-right"><strong>{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($item->subtotal, 2) }}</strong></td>
+                            <td class="text-right">{{ $appSettings['currency'] ?? '$' }}{{ number_format($item->price, 2) }}</td>
+                            <td class="text-right"><strong>{{ $appSettings['currency'] ?? '$' }}{{ number_format($item->subtotal, 2) }}</strong></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -453,15 +467,15 @@
                 <div class="totals-section">
                     <div class="totals-row">
                         <span class="totals-label">Subtotal</span>
-                        <span class="totals-value">{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($payment->order->subtotal, 2) }}</span>
+                        <span class="totals-value">{{ $appSettings['currency'] ?? '$' }}{{ number_format($payment->order->subtotal, 2) }}</span>
                     </div>
                     <div class="totals-row">
                         <span class="totals-label">Tax ({{ $appSettings['tax_percentage'] ?? 10 }}%)</span>
-                        <span class="totals-value">{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($payment->order->tax, 2) }}</span>
+                        <span class="totals-value">{{ $appSettings['currency'] ?? '$' }}{{ number_format($payment->order->tax, 2) }}</span>
                     </div>
                     <div class="totals-row grand-total">
                         <span class="totals-label">Total ({{ $appSettings['currency'] ?? 'USD' }})</span>
-                        <span class="totals-value">{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($payment->order->total_amount, 2) }}</span>
+                        <span class="totals-value">{{ $appSettings['currency'] ?? '$' }}{{ number_format($payment->order->total_amount, 2) }}</span>
                     </div>
                 </div>
 
@@ -485,7 +499,7 @@
                         </div>
                         <div>
                             <p style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Amount Paid</p>
-                            <p style="font-size: 15px; font-weight: 700; color: #2c3e50;">{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($payment->paid_amount, 2) }}</p>
+                            <p style="font-size: 15px; font-weight: 700; color: #2c3e50;">{{ $appSettings['currency'] ?? '$' }}{{ number_format($payment->paid_amount, 2) }}</p>
                         </div>
                     </div>
                     @if($payment->payer_name || $payment->payer_account)
@@ -502,7 +516,7 @@
                     @if($payment->change_amount > 0)
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
                         <p style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Change</p>
-                        <p style="font-size: 18px; font-weight: 900; color: #11998e;">{{ $appSettings['currency_symbol'] ?? '$' }}{{ number_format($payment->change_amount, 2) }}</p>
+                        <p style="font-size: 18px; font-weight: 900; color: #11998e;">{{ $appSettings['currency'] ?? '$' }}{{ number_format($payment->change_amount, 2) }}</p>
                     </div>
                     @endif
                 </div>

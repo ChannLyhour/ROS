@@ -53,7 +53,7 @@
             <small class="text-muted text-truncate d-inline-block" style="max-width:200px; font-size:0.78rem;">{{ $item->description }}</small>
         </td>
         <td class="text-center">
-            <span class="cat-badge">{{ $item->category->name }}</span>
+            <span class="cat-badge">{{ $item->category->name ?? '--' }}</span>
         </td>
         <td class="text-center">
             <span class="fw-semibold text-dark small">{{ $appSettings['currency'] }}{{ number_format($item->price, 2) }}</span>
