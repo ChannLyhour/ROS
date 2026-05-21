@@ -39,7 +39,7 @@ class SettingController extends Controller
      */
     public function update(Request $request)
     {
-        $this->authorize('update', $setting);
+        $this->authorize('update', new Setting());
         $data = $request->except('_token', '_method', 'business_logo');
 
         // Handle Business Logo

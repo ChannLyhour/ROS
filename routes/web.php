@@ -71,10 +71,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('search', [SearchController::class, 'search'])->name('admin.search');
 
     // Backups
+    Route::get('backups/browse-folders', [BackupController::class, 'browseFolders'])->name('backups.browse-folders');
+    Route::post('backups/create-folder', [BackupController::class, 'createFolder'])->name('backups.create-folder');
     Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
     Route::post('backups', [BackupController::class, 'create'])->name('backups.create');
     Route::get('backups/download', [BackupController::class, 'download'])->name('backups.download');
     Route::delete('backups', [BackupController::class, 'destroy'])->name('backups.destroy');
+    Route::post('backups/schedule', [BackupController::class, 'updateSchedule'])->name('backups.schedule.update');
 
     // Kitchen KDS
     Route::get('kitchen', [KitchenController::class, 'index'])->name('kitchen.index');

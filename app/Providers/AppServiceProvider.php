@@ -28,6 +28,32 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::useBootstrapFive();
 
+        // Dynamic Backup Disk Location
+        $backupDiskPath = SystemHelper::getSetting('backup_disk_path');
+        if ($backupDiskPath) {
+            config(['filesystems.disks.local.root' => $backupDiskPath]);
+        }
+
+        // Fix Windows-specific environment variables for sub-processes (like mysqldump)
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $systemRoot = getenv('SystemRoot') ?: getenv('SYSTEMROOT') ?: $_SERVER['SystemRoot'] ?? $_SERVER['SYSTEMROOT'] ?? null;
+            if (!$systemRoot) {
+                if (is_dir('C:\Windows')) {
+                    $systemRoot = 'C:\\Windows';
+                } elseif (is_dir('C:\WINNT')) {
+                    $systemRoot = 'C:\\WINNT';
+                }
+            }
+            if ($systemRoot) {
+                putenv("SystemRoot={$systemRoot}");
+                putenv("windir={$systemRoot}");
+                $_ENV['SystemRoot'] = $systemRoot;
+                $_ENV['windir'] = $systemRoot;
+                $_SERVER['SystemRoot'] = $systemRoot;
+                $_SERVER['windir'] = $systemRoot;
+            }
+        }
+
         // Implicitly grant "admin" role all permissions
         // This works with $user->can() checks
         Gate::before(function ($user, $ability) {
