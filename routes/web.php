@@ -88,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['role:administrator,cashier'])->group(function () {
+        Route::get('pos/checkout', [OrderController::class, 'checkout'])->name('pos.checkout');
         Route::get('pos', [OrderController::class, 'create'])->name('pos.index');
         Route::resource('orders', OrderController::class);
         Route::resource('tables', TableController::class);

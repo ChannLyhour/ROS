@@ -32,7 +32,7 @@
         @yield('content')
         @else
         @php
-            $isPos = request()->routeIs('pos.index') || request()->routeIs('orders.create') || request()->routeIs('orders.edit');
+            $isPos = request()->routeIs('pos.index') || request()->routeIs('orders.create') || request()->routeIs('orders.edit') || request()->routeIs('pos.checkout');
         @endphp
         <div class="admin-layout {{ $isPos ? 'hide-sidebar' : '' }}" id="adminLayout">
             <div class="sidebar-overlay" id="sidebarOverlay"></div>

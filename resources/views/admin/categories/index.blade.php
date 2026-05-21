@@ -3,15 +3,14 @@
 @section('title', __('Categories'))
 
 @section('content')
-<x-master-table 
-    title="{{ __('Category Management') }}" 
-    subtitle="{{ __('Organize your menu items into structured groups') }}" 
-    :createRoute="route('categories.create')" 
-    createLabel="{{ __('Add Category') }}" 
-    searchPlaceholder="{{ __('Search category name...') }}" 
-    :headers="[__('#'), __('Category Details'), __('Item Count'), __('Status'), __('Actions')]" 
-    :items="$categories"
->
+<x-master-table
+    title="{{ __('Category Management') }}"
+    subtitle="{{ __('Organize your menu items into structured groups') }}"
+    :createRoute="route('categories.create')"
+    createLabel="{{ __('Add Category') }}"
+    searchPlaceholder="{{ __('Search category name...') }}"
+    :headers="[__('#'), __('Category Details'), __('Item Count'), __('Status'), __('Actions')]"
+    :items="$categories">
     @forelse($categories as $category)
     <tr>
         <td class="text-center">
@@ -37,15 +36,15 @@
         </td>
         <td class="text-center">
             @if($category->status)
-                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
-                    <i data-lucide="check-circle" style="width: 14px;"></i>
-                    {{ __('ACTIVE') }}
-                </span>
+            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
+                <i data-lucide="check-circle" style="width: 14px;"></i>
+                {{ __('ACTIVE') }}
+            </span>
             @else
-                <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
-                    <i data-lucide="slash" style="width: 14px;"></i>
-                    {{ __('DISABLED') }}
-                </span>
+            <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
+                <i data-lucide="slash" style="width: 14px;"></i>
+                {{ __('DISABLED') }}
+            </span>
             @endif
         </td>
         <td class="text-end pe-4">

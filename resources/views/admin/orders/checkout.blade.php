@@ -18,14 +18,14 @@
                                 @else
                                 New Order
                                 @endif
-                                </h2>
-                                <p class="text-muted small mb-0 fw-medium">
-                                    @if(isset($existingOrder) && $existingOrder)
-                                    <span class="badge bg-warning-subtle text-warning border-warning border-opacity-25 px-2">Draft</span> Modification in progress
-                                    @else
-                                    <span class="badge bg-success-subtle text-success border-success border-opacity-25 px-2">New</span> Start a fresh service
-                                    @endif
-                                </p>
+                            </h4>
+                            <p class="text-muted small mb-0 fw-medium">
+                                @if(isset($existingOrder) && $existingOrder)
+                                <span class="badge bg-warning-subtle text-warning border-warning border-opacity-25 px-2">Draft</span> Modification in progress
+                                @else
+                                <span class="badge bg-success-subtle text-success border-success border-opacity-25 px-2">New</span> Start a fresh service
+                                @endif
+                            </p>
                         </div>
 
                         <div class="search-box flex-grow-1" style="max-width: 280px;">
@@ -64,28 +64,14 @@
                     <div class="row g-4" id="menuGrid">
                         @forelse($menuItems as $item)
                         <div class="col-xl-3 col-lg-4 col-md-6 menu-item-card" data-id="{{ $item->id }}" data-category="{{ $item->category_id }}" data-name="{{ strtolower($item->name) }}">
-                            <div class="card h-100 border-0 shadow-sm rounded-xl overflow-hidden item-interactive" onclick="addToCart({{ json_encode($item) }})">
-                                <div class="d-flex p-3 gap-3">
-                                    <div class="product-image-wrapper flex-shrink-0">
-                                        <img src="{{ $item->display_image }}" class="rounded-lg shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
-                                        <div class="add-btn-mini">
-                                            <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 d-flex flex-column justify-content-between overflow-hidden">
-                                        <div>
-                                            <h6 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 0.9rem;">{{ $item->name }}</h6>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="extra-small text-muted fw-medium">{{ $item->category->name }}</span>
-                                                <span class="text-success extra-small fw-bold">• {{ rand(1, 50) }} left</span>
-                                            </div>
-                                        </div>
-                                        <div class="text-end mt-auto">
-                                            <div class="price-text text-primary fw-black" style="font-size: 1.1rem;">
-                                                <span class="extra-small fw-normal text-muted me-1">From</span>{{ $appSettings['currency'] }}{{ number_format($item->price, 2) }}
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="card h-100 border-0 shadow-sm rounded-lg overflow-hidden item-interactive" data-item="{{ json_encode($item) }}" onclick="addToCart(this)">
+                                <div class="position-relative">
+                                    <img src="{{ $item->display_image }}" class="card-img-top" style="height: 160px; object-fit: cover;" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                                    <div class="price-pill">{{ $appSettings['currency'] }}{{ number_format($item->price, 2) }}</div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <h6 class="fw-bold text-dark mb-1 text-truncate">{{ $item->name }}</h6>
+                                    <p class="extra-small text-muted mb-0">{{ $item->category->name }}</p>
                                 </div>
                             </div>
                         </div>
@@ -116,105 +102,7 @@
     </div>
 </div>
 
-<!-- Payment Modal -->
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-black">Complete Checkout</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="text-center mb-4" id="modalTotalDisplayArea">
-                    {{-- Area will be updated by JS --}}
-                </div>
 
-                <div class="payment-methods row g-2 mb-4">
-                    <div class="col-4">
-                        <input type="radio" class="btn-check" name="pay_method" id="pay_cash" value="cash" checked>
-                        <label class="btn btn-outline-primary w-100 py-3" for="pay_cash">
-                            <i data-lucide="banknote" class="d-block mb-1 mx-auto"></i>
-                            <span class="small fw-bold">Cash</span>
-                        </label>
-                    </div>
-                    <div class="col-4">
-                        <input type="radio" class="btn-check" name="pay_method" id="pay_card" value="card">
-                        <label class="btn btn-outline-primary w-100 py-3" for="pay_card">
-                            <i data-lucide="credit-card" class="d-block mb-1 mx-auto"></i>
-                            <span class="small fw-bold">Card</span>
-                        </label>
-                    </div>
-                    <div class="col-4">
-                        <input type="radio" class="btn-check" name="pay_method" id="pay_qr" value="qr">
-                        <label class="btn btn-outline-primary w-100 py-3" for="pay_qr">
-                            <i data-lucide="qr-code" class="d-block mb-1 mx-auto"></i>
-                            <span class="small fw-bold">QR Pay</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div id="qrPaymentInfo" class="p-3 bg-light rounded-lg border mb-4 d-none">
-                    <div class="mb-3">
-                        <h6 class="fw-bold mb-2">QR Pay Instructions</h6>
-                        <p class="small text-muted mb-0">Scan the QR code below with your mobile wallet, then enter the payer name shown on the phone receipt.</p>
-                    </div>
-                    <div class="text-center mb-3">
-                        <img src="{{ asset('images/myqr.jpg') }}" alt="QR Code" class="img-fluid" style="max-width: 240px;">
-                    </div>
-                    <div class="text-center">
-                        <a href="{{ asset('images/myqr.jpg') }}" target="_blank" class="btn btn-outline-secondary btn-sm">Open QR in new tab</a>
-                    </div>
-                    <div class="row g-2 mt-3">
-                        <div class="col-12">
-                            <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Paid By</label>
-                            <input type="text" id="payerName" class="form-control premium-field" placeholder="Customer account name">
-                        </div>
-                        <div class="col-12">
-                            <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Account / Phone</label>
-                            <input type="text" id="payerAccount" class="form-control premium-field" placeholder="Phone number or account id">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="info-label mb-2">Internal Order Notes :</label>
-                    <textarea id="orderNotes" class="form-control premium-field" rows="2" placeholder="Special requests, allergies, etc."></textarea>
-                </div>
-
-                <!-- Cash Payment Calculator -->
-                <div id="cashCalculator" class="p-3 bg-light rounded-lg border mb-4 animate__animated animate__fadeIn">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-6">
-                            <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Amount Paid</label>
-                            <div class="input-group premium-group shadow-sm">
-                                <span class="input-group-text bg-white border-end-0 py-1 px-2 fw-bold text-muted">{{ $appSettings['currency'] }}</span>
-                                <input type="number" id="cashReceived" class="form-control premium-field border-start-0 py-1" step="0.01" placeholder="0.00" oninput="calculateChange()">
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label class="extra-small fw-black text-muted text-uppercase mb-1 d-block">Change Due</label>
-                            <div class="h4 fw-black mb-0 text-success" id="changeAmount">{{ $appSettings['currency'] }}0.00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-2">
-                    <div class="col-6">
-                        <button type="button" class="btn btn-warning w-100 py-3 fw-bold rounded-lg border shadow-sm" onclick="processPayment(false)">
-                            <i data-lucide="clock" class="me-2" style="width: 18px;"></i> SAVE (PAY LATER)
-                        </button>
-                    </div>
-                    <div class="col-6">
-                        <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-lg" onclick="processPayment(true)">
-                            <i data-lucide="check" class="me-2" style="width: 18px;"></i> PAY NOW
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
 
 <style>
     body {
@@ -225,49 +113,8 @@
         height: calc(100vh - 80px);
     }
 
-    .fw-black {
-        font-weight: 900;
-    }
-
-    .rounded-lg {
-        border-radius: 12px !important;
-    }
-
-    .extra-small {
-        font-size: 0.65rem;
-    }
-
-    .z-index-10 {
-        z-index: 10 !important;
-    }
-
-    /* Category Buttons */
-    .btn-category {
-        padding: 10px 24px;
-        border-radius: 100px;
-        background: #fff;
-        color: #64748b;
-        border: 1px solid #e2e8f0;
-        font-weight: 700;
-        font-size: 0.85rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-    }
-
-    .btn-category:hover {
-        background: #f8fafc;
-        color: #0f172a;
-        border-color: #cbd5e1;
-        transform: translateY(-2px);
-    }
-
-    .btn-category.active {
-        background: #f08913;
-        color: white;
-        border-color: #f08913;
-        box-shadow: 0 4px 12px rgba(240, 137, 19, 0.3) !important;
+    .fw-bold {
+        font-weight: 700 !important;
     }
 
     .hide-scrollbar::-webkit-scrollbar {
@@ -279,389 +126,135 @@
         scrollbar-width: none;
     }
 
+    /* Category Buttons */
+    .btn-category {
+        padding: 8px 16px;
+        border-radius: 4px;
+        background: #fff;
+        color: #495057;
+        border: 1px solid #ced4da;
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-category:hover {
+        background: #e9ecef;
+        color: #212529;
+    }
+
+    .btn-category.active {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    /* Menu Items */
     .menu-item-card .card {
-        transition: all 0.3s ease;
-        border: 1px solid #f1f5f9 !important;
+        border: 1px solid #dee2e6 !important;
+        cursor: pointer;
     }
 
     .menu-item-card .card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
-        border-color: #f08913 !important;
-    }
-
-    .item-interactive {
-        cursor: pointer;
+        border-color: #0d6efd !important;
+        background: #f8f9fa;
     }
 
     .price-pill {
         position: absolute;
         bottom: 12px;
         right: 12px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(4px);
-        color: #0f172a;
-        padding: 6px 14px;
-        border-radius: 100px;
-        font-weight: 900;
-        font-size: 0.9rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+        color: #212529;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: 1px solid #dee2e6;
     }
 
-    .btn-premium-lg {
-        background: linear-gradient(135deg, #f08913 0%, #d97706 100%);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .btn-premium-lg:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(240, 137, 19, 0.4) !important;
-    }
-
-    /* Cart Item Styling */
+    /* Cart Items */
     .cart-item {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 12px;
-        padding: 12px;
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #f1f5f9;
-        transition: all 0.2s ease;
-    }
-
-    .cart-item:hover {
-        border-color: #f0891320;
-        background: #f8fafc;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #dee2e6;
     }
 
     .qty-controls {
         display: flex;
         align-items: center;
-        background: #f1f5f9;
-        border-radius: 50px;
-        padding: 4px;
+        background: #e9ecef;
+        border-radius: 4px;
+        padding: 2px;
     }
 
     .qty-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
         border: none;
         background: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         font-weight: bold;
-        color: #0f172a;
-        transition: all 0.2s;
     }
 
     .qty-btn:hover {
-        background: #f08913;
+        background: #0d6efd;
         color: #fff;
     }
 
-    .btn-premium-toggle {
-        border: 1px solid #e2e8f0;
-        background: #f8fafc;
-        color: #64748b;
-        border-radius: 10px;
-        padding: 12px 10px;
-        font-weight: 800;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.2s ease;
-        letter-spacing: 0.5px;
-    }
-
-    .btn-check:checked+.btn-premium-toggle {
-        background: #f08913;
-        border-color: #f08913;
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(240, 137, 19, 0.2);
-    }
-
-    /* Select2 Premium Styling */
+    /* Select2 Basic clean styling */
     .select2-container--default .select2-selection--single {
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        height: 48px !important;
-        background-color: #f8fafc !important;
-        transition: all 0.3s;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+        height: 38px !important;
         display: flex !important;
         align-items: center !important;
     }
 
     .select2-container--default .select2-selection--single .select2-selection__rendered {
-        padding-left: 15px !important;
-        color: #64748b !important;
-        font-weight: 600 !important;
-        line-height: 48px !important;
+        color: #495057 !important;
+        line-height: 38px !important;
     }
 
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
-        color: #94a3b8 !important;
-    }
-
-    .select2-container--default .select2-selection--single:focus {
-        border-color: #f08913 !important;
-        box-shadow: 0 0 0 4px rgba(240, 137, 19, 0.1) !important;
+        color: #6c757d !important;
     }
 
     .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 46px !important;
-        right: 12px !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .select2-dropdown {
-        border: none !important;
-        border-radius: 12px !important;
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
-        overflow: hidden !important;
-    }
-
-    .select2-search__field {
-        border-radius: 8px !important;
-        padding: 8px 12px !important;
+        height: 36px !important;
     }
 
     .select2-results__option--highlighted[aria-selected] {
-        background-color: #f08913 !important;
-    }
-
-    .btn-check:checked+.btn-premium-toggle i {
-        opacity: 1;
-    }
-
-    /* Modal Animation */
-    #cashCalculator {
-        transition: all 0.3s ease;
-    }
-
-    .transition-all {
-        transition: all 0.3s ease;
-    }
-
-    .hover-lift:hover {
-        transform: translateY(-2px);
-    }
-
-    .transform-active:active {
-        transform: scale(0.97);
+        background-color: #0d6efd !important;
     }
 
     .nav-search-btn {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 8px 16px;
-        border-radius: 10px;
-        transition: all 0.2s ease;
+        background: #fff;
+        border: 1px solid #ced4da;
+        padding: 6px 12px;
+        border-radius: 4px;
+        transition: border-color 0.15s ease-in-out;
     }
 
     .nav-search-btn:hover {
-        background: #fff;
-        border-color: #f08913;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-color: #0d6efd;
     }
 
     .kbd-shortcut {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 4px;
-        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        color: #64748b;
-        display: inline-block;
-        font-family: inherit;
-        font-size: 0.65rem;
-        font-weight: 700;
-        line-height: 1;
-        padding: 4px 6px;
-        white-space: nowrap;
-    }
-
-    .fw-semibold {
-        font-weight: 600 !important;
-    }
-
-    /* Responsive Sidebar Drawer */
-    @media (max-width: 991.98px) {
-        .header-info {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .search-box {
-            max-width: 100% !important;
-            width: 100%;
-        }
-
-        .cart-sidebar {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 90% !important;
-            max-width: 400px;
-            z-index: 1040;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            height: 100vh !important;
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .cart-sidebar.active {
-            right: 0;
-        }
-
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            z-index: 1030;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .mobile-cart-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            left: auto;
-            transform: none;
-            z-index: 1000;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #f08913 !important;
-            border: 3px solid rgba(255,255,255,0.3);
-            color: #fff !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 15px 35px rgba(240, 137, 19, 0.5);
-            transition: all 0.3s ease;
-            animation: pulse-orange 2s infinite;
-        }
-
-        .mobile-cart-toggle:active {
-            transform: scale(0.9);
-        }
-
-        @keyframes pulse-orange {
-            0% { box-shadow: 0 0 0 0 rgba(240, 137, 19, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(240, 137, 19, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(240, 137, 19, 0); }
-        }
-
-        .pos-container {
-            height: 100vh;
-        }
-
-        .col-lg-8 {
-            height: 100vh !important;
-            padding-bottom: 100px !important;
-        }
-
-        .cart-badge {
-            font-size: 0.65rem;
-            border: 2px solid #f08913;
-        }
-    }
-
-    @media (max-width: 575.98px) {
-        .menu-item-card .card .d-flex {
-            gap: 10px !important;
-            padding: 12px !important;
-        }
-
-        .product-image-wrapper img {
-            width: 70px !important;
-            height: 70px !important;
-        }
-
-        .price-text {
-            font-size: 1rem !important;
-        }
-
-        .header-info h2 {
-            font-size: 1.4rem !important;
-        }
-    }
-
-    .rounded-xl {
-        border-radius: 16px !important;
-    }
-
-    .product-image-wrapper {
-        position: relative;
-    }
-
-    .add-btn-mini {
-        position: absolute;
-        bottom: -5px;
-        right: -5px;
-        width: 24px;
-        height: 24px;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        color: #64748b;
-        z-index: 2;
-    }
-
-    .menu-item-card .card:hover {
-        border-color: #f08913 !important;
-        background: #fffaf5;
-        transform: translateY(-5px);
-    }
-
-    .menu-item-card .card:hover .add-btn-mini {
-        background: #f08913;
-        color: #fff;
-        border-color: #f08913;
-    }
-
-    .customer-selector {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 10px 15px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .customer-selector:hover {
-        border-color: #f08913;
-        background: #fffaf5;
-    }
-
-    .cart-header-title {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        padding: 2px 4px;
         font-size: 0.75rem;
-        color: #94a3b8;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1px;
     }
 </style>
 
@@ -736,6 +329,18 @@
     }
 
     function addToCart(item) {
+        if (item && typeof item.getAttribute === 'function') {
+            const dataStr = item.getAttribute('data-item');
+            if (dataStr) {
+                try {
+                    item = JSON.parse(dataStr);
+                } catch (e) {
+                    console.error('Error parsing item JSON:', e);
+                    return;
+                }
+            }
+        }
+
         const existing = cart.find(i => i.id === item.id);
         if (existing) {
             existing.qty++;
@@ -822,212 +427,61 @@
 
         // Total display logic
         let totalHTML = '';
-        let modalTotalHTML = '';
 
         if (displayType === 'USD') {
             totalHTML = `
                 <span class="h3 fw-black text-primary mb-0 d-block">$${total.toFixed(2)}</span>
                 <span class="badge bg-light text-muted fw-bold border" style="font-size: 0.7rem;">៛${totalRiel.toLocaleString()}</span>
             `;
-            modalTotalHTML = `
-                <h1 class="fw-black text-primary mb-0">$${total.toFixed(2)}</h1>
-                <div class="badge bg-primary-subtle text-primary fw-bold mb-3 px-3 py-2" style="font-size: 1rem;">៛${totalRiel.toLocaleString()}</div>
-                <p class="text-muted small">Total amount due (USD Primary)</p>
-            `;
         } else {
             totalHTML = `
                 <span class="h3 fw-black text-primary mb-0 d-block">៛${totalRiel.toLocaleString()}</span>
                 <span class="badge bg-light text-muted fw-bold border" style="font-size: 0.7rem;">$${total.toFixed(2)}</span>
             `;
-            modalTotalHTML = `
-                <h1 class="fw-black text-primary mb-0">៛${totalRiel.toLocaleString()}</h1>
-                <div class="badge bg-primary-subtle text-primary fw-bold mb-3 px-3 py-2" style="font-size: 1rem;">$${total.toFixed(2)}</div>
-                <p class="text-muted small">Total amount due (Riel Primary)</p>
-            `;
         }
 
         document.getElementById('totalDisplayArea').innerHTML = totalHTML;
-        document.getElementById('modalTotalDisplayArea').innerHTML = modalTotalHTML;
-
-        // For calculation purposes, we still need these IDs accessible or handle logic differently
         window.currentTotalUSD = total;
-        calculateChange();
     }
 
-    function calculateChange() {
-        const total = window.currentTotalUSD || 0;
-        const paid = parseFloat(document.getElementById('cashReceived').value) || 0;
-        const change = paid - total;
-
-        const changeDisplay = document.getElementById('changeAmount');
-        if (change >= 0) {
-            changeDisplay.innerText = `$${change.toFixed(2)}`;
-            changeDisplay.className = 'h4 fw-black mb-0 text-success';
-        } else {
-            changeDisplay.innerText = `$${Math.abs(change).toFixed(2)}`;
-            changeDisplay.className = 'h4 fw-black mb-0 text-danger';
-        }
-    }
-
-    // Toggle payment UI based on selected method
-    document.querySelectorAll('input[name="pay_method"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const calc = document.getElementById('cashCalculator');
-            const qrInfo = document.getElementById('qrPaymentInfo');
-            if (this.id === 'pay_cash') {
-                calc.classList.remove('d-none');
-                qrInfo.classList.add('d-none');
-            } else if (this.id === 'pay_qr') {
-                calc.classList.add('d-none');
-                qrInfo.classList.remove('d-none');
-            } else {
-                calc.classList.add('d-none');
-                qrInfo.classList.add('d-none');
-            }
-        });
-    });
-
-    function clearCart() {
-        if (!confirm('Are you sure you want to clear the entire order?')) return;
-        cart = [];
-        localStorage.removeItem('pos_cart');
-        renderCart();
-    }
-
-    // Auto-fill payment amount on modal show
-    document.getElementById('paymentModal').addEventListener('show.bs.modal', function() {
-        const total = window.currentTotalUSD || 0;
-        document.getElementById('cashReceived').value = total.toFixed(2);
-        calculateChange();
-    });
-
-    /**
-     * POS Service Module
-     * Encapsulates AJAX calls and UI state management
-     */
-    const POS = {
-        isProcessing: false,
-        btnSelector: '.btn-orange[onclick*="processPayment"]',
-
-        async request(endpoint, payload) {
-            if (this.isProcessing) return;
-            this.setLoading(true);
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (!response.ok) throw result;
-                return result;
-            } catch (error) {
-                this.handleError(error);
-                throw error;
-            } finally {
-                this.setLoading(false);
-            }
-        },
-
-        setLoading(status) {
-            this.isProcessing = status;
-            const btns = document.querySelectorAll(this.btnSelector);
-            btns.forEach(btn => {
-                if (status) {
-                    btn.dataset.originalHtml = btn.innerHTML;
-                    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Processing...`;
-                    btn.disabled = true;
-                } else {
-                    btn.innerHTML = btn.dataset.originalHtml || 'PAYMENT & CHECKOUT';
-                    btn.disabled = false;
-                }
-            });
-        },
-
-        handleError(error) {
-            console.error('POS API Error:', error);
-            let message = 'An unexpected error occurred.';
-
-            if (error.errors) {
-                message = Object.values(error.errors).flat().join('\n');
-            } else if (error.message) {
-                message = error.message;
-            }
-
-            alert(message);
-        }
-    };
-
-    /**
-     * Primary Order Processing Function
-     */
-    async function processPayment(isPaid = true) {
+    function goToCheckout(btn) {
         if (cart.length === 0) {
             alert('Your cart is empty.');
             return;
         }
 
         const type = document.querySelector('input[name="orderType"]:checked')?.value || 'takeaway';
-        const tableId = document.getElementById('tableId')?.value;
+        const tableId = document.getElementById('tableId')?.value || '';
 
         if (type === 'dine_in' && !tableId) {
             alert('Please assign a table for Dine-In.');
             return;
         }
 
-        const payMethod = document.querySelector('input[name="pay_method"]:checked')?.value || 'cash';
+        // Save current cart state to local storage
+        saveCartToStorage();
 
-        if (isPaid && payMethod === 'qr') {
-            const payerName = document.getElementById('payerName')?.value.trim();
-            const confirmed = confirm(`QR Pay selected.${payerName ? ` Paid by ${payerName}.` : ''} Click OK once the phone payment is completed.`);
-            if (!confirmed) {
-                return;
-            }
+        // Redirect to pos/checkout page
+        const orderId = {!! json_encode($existingOrder->id ?? null) !!};
+        let url = "{{ route('pos.checkout') }}?type=" + encodeURIComponent(type);
+        if (tableId) {
+            url += "&table=" + encodeURIComponent(tableId);
         }
-
-        const payload = {
-            order_id: {!! json_encode($existingOrder->id ?? null) !!},
-            order_type: type,
-            table_id: tableId,
-            notes: document.getElementById('orderNotes')?.value,
-            items: cart.map(i => ({
-                menu_item_id: i.id,
-                quantity: i.qty
-            })),
-            payment_method: isPaid ? payMethod : null,
-            paid_amount: isPaid ? (payMethod === 'qr' ? window.currentTotalUSD || 0 : (parseFloat(document.getElementById('cashReceived')?.value) || 0)) : 0,
-            payer_name: isPaid && payMethod === 'qr' ? document.getElementById('payerName')?.value.trim() : null,
-            payer_account: isPaid && payMethod === 'qr' ? document.getElementById('payerAccount')?.value.trim() : null
-        };
-
-        try {
-            const result = await POS.request('/api/v1/orders', payload);
-            if (result.success) {
-                localStorage.removeItem('pos_cart');
-                if (isPaid && payMethod === 'qr') {
-                    const payer = payload.payer_name || 'mobile account';
-                    alert(`Payment received by ${payer}.`);
-                }
-                window.location.href = "{{ route('orders.index') }}";
-            }
-        } catch (e) {
-            // Error managed by POS.handleError
+        if (orderId) {
+            url += "&order_id=" + encodeURIComponent(orderId);
         }
+        window.location.href = url;
     }
 
     // Storage Logic
     function saveCartToStorage() {
+        const tableEl = document.getElementById('tableId');
+        const notesEl = document.getElementById('orderNotes');
         const data = {
             items: cart,
             type: document.querySelector('input[name="orderType"]:checked') ? document.querySelector('input[name="orderType"]:checked').value : 'dine_in',
-            table_id: document.getElementById('tableId').value,
-            notes: document.getElementById('orderNotes').value
+            table_id: tableEl ? tableEl.value : '',
+            notes: notesEl ? notesEl.value : ''
         };
         localStorage.setItem('pos_cart', JSON.stringify(data));
     }
@@ -1035,11 +489,13 @@
     function loadCartFromStorage() {
         // If we have an existing order from backend, prioritize it over localStorage
         @if(isset($existingOrder) && $existingOrder)
-        if (document.getElementById('orderNotes')) {
-            document.getElementById('orderNotes').value = {!! json_encode($existingOrder->notes ?? '') !!};
+        const notesEl = document.getElementById('orderNotes');
+        if (notesEl) {
+            notesEl.value = {!! json_encode($existingOrder->notes ?? '') !!};
         }
-        if (document.getElementById('tableId')) {
-            document.getElementById('tableId').value = "{{ $existingOrder->table_id ?? '' }}";
+        const tableEl = document.getElementById('tableId');
+        if (tableEl) {
+            tableEl.value = "{{ $existingOrder->table_id ?? '' }}";
         }
         if ("{{ $existingOrder->order_type }}") {
             const radio = document.getElementById("{{ $existingOrder->order_type }}");
@@ -1058,17 +514,128 @@
                     const radio = document.getElementById(data.type);
                     if (radio) radio.checked = true;
                 }
-                if (data.table_id) document.getElementById('tableId').value = data.table_id;
-                if (data.notes) document.getElementById('orderNotes').value = data.notes;
+                const tableEl = document.getElementById('tableId');
+                if (tableEl && data.table_id) tableEl.value = data.table_id;
+
+                const notesEl = document.getElementById('orderNotes');
+                if (notesEl && data.notes) notesEl.value = data.notes;
             } catch (e) {
-                console.error("Failed to load cart", e);
+                console.error("Failed to load cart", e); 
             }
         }
     }
 
+    function clearCart() {
+        if (!confirm('Are you sure you want to clear the entire order?')) return;
+        cart = [];
+        localStorage.removeItem('pos_cart');
+        renderCart();
+    }
+
     function persistCartManually() {
-        saveCartToStorage();
-        showToast('Order saved to local storage.', 'success');
+        if (!Array.isArray(cart) || cart.length === 0) {
+            if (typeof showToast === 'function') {
+                showToast('Your cart is empty.', 'error');
+            } else {
+                alert('Your cart is empty.');
+            }
+            return;
+        }
+
+        const type = document.querySelector('input[name="orderType"]:checked')?.value || 'takeaway';
+        const tableId = document.getElementById('tableId')?.value || '';
+
+        if (type === 'dine_in' && !tableId) {
+            if (typeof showToast === 'function') {
+                showToast('Please assign a table for Dine-In.', 'error');
+            } else {
+                alert('Please assign a table for Dine-In.');
+            }
+            return;
+        }
+
+        const orderId = {!! json_encode($existingOrder->id ?? null) !!};
+        const url = orderId ? "{{ route('orders.update', ':id') }}".replace(':id', orderId) : "{{ route('orders.store') }}";
+        const method = orderId ? 'PUT' : 'POST';
+
+        const payload = {
+            order_id: orderId ? parseInt(orderId) : null,
+            order_type: type,
+            table_id: tableId ? parseInt(tableId) : null,
+            items: cart.map(i => ({
+                menu_item_id: i.id,
+                quantity: i.qty
+            })),
+            notes: document.getElementById('orderNotes')?.value || '',
+            payment_method: null,
+            paid_amount: 0
+        };
+
+        // UI feedback - locate save button
+        const saveBtns = document.querySelectorAll('[onclick="persistCartManually()"]');
+        saveBtns.forEach(btn => {
+            btn.disabled = true;
+            btn.dataset.origHtml = btn.innerHTML;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+        });
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                ...payload,
+                _method: method
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                localStorage.removeItem('pos_cart');
+                if (typeof showToast === 'function') {
+                    showToast(orderId ? 'Draft order updated in database!' : 'Draft order saved to database!', 'success');
+                } else {
+                    alert(orderId ? 'Draft order updated in database!' : 'Draft order saved to database!');
+                }
+
+                // Brief redirect to clean state/index
+                setTimeout(() => {
+                    window.location.href = "{{ route('orders.index') }}";
+                }, 1000);
+            } else {
+                throw new Error(result.message || 'Failed to persist order.');
+            }
+        })
+        .catch(err => {
+            console.error('AJAX Persist Error:', err);
+            let message = 'Failed to save order to database.';
+            if (err.errors) {
+                message = Object.values(err.errors).flat().join('\n');
+            } else if (err.message) {
+                message = err.message;
+            }
+
+            if (typeof showToast === 'function') {
+                showToast(message, 'error');
+            } else {
+                alert(message);
+            }
+        })
+        .finally(() => {
+            saveBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.origHtml || `<i data-lucide="save" style="width: 16px;"></i>`;
+            });
+            if (window.lucide) lucide.createIcons();
+        });
     }
 
     // Initialize state
@@ -1100,13 +667,29 @@
         if (badge) {
             badge.innerText = count;
             const toggle = document.getElementById('mobileCartToggle');
-            if (count > 0) {
-                toggle.classList.add('animate__pulse');
-            } else {
-                toggle.classList.remove('animate__pulse');
+            if (toggle) {
+                if (count > 0) {
+                    toggle.classList.add('animate__pulse');
+                } else {
+                    toggle.classList.remove('animate__pulse');
+                }
             }
         }
     }
+
+    // Global scope registrations
+    window.toggleTable = toggleTable;
+    window.addToCart = addToCart;
+    window.updateQty = updateQty;
+    window.renderCart = renderCart;
+    window.updateTotals = updateTotals;
+    window.goToCheckout = goToCheckout;
+    window.saveCartToStorage = saveCartToStorage;
+    window.loadCartFromStorage = loadCartFromStorage;
+    window.clearCart = clearCart;
+    window.persistCartManually = persistCartManually;
+    window.toggleMobileCart = toggleMobileCart;
+    window.updateMobileBadge = updateMobileBadge;
 </script>
 @endpush
 @endsection

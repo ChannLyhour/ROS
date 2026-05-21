@@ -340,6 +340,9 @@ class TranslationSeeder extends Seeder
             ['group' => 'general', 'key' => 'Menu Item created successfully!', 'en' => 'Menu Item created successfully!', 'kh' => 'មុខម្ហូបត្រូវបានបង្កើតដោយជោគជ័យ!'],
             ['group' => 'general', 'key' => 'Menu Item updated successfully!', 'en' => 'Menu Item updated successfully!', 'kh' => 'មុខម្ហូបត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ!'],
             ['group' => 'general', 'key' => 'Menu Item deleted successfully!', 'en' => 'Menu Item deleted successfully!', 'kh' => 'មុខម្ហូបត្រូវបានលុបដោយជោគជ័យ!'],
+            ['group' => 'pos', 'key' => 'New Transaction', 'en' => 'New Transaction', 'kh' => 'ប្រតិបត្តិការថ្មី'],
+            ['group' => 'pos', 'key' => 'Modify Order', 'en' => 'Modify Order', 'kh' => 'កែសម្រួលការកុម្ម៉ង់'],
+            ['group' => 'pos', 'key' => 'Back to POS', 'en' => 'Back to POS', 'kh' => 'ត្រឡប់ទៅ POS'],
         ];
 
         foreach ($translations as $data) {

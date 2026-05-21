@@ -126,4 +126,36 @@ class OrderService
             Table::where('id', $order->table_id)->update(['status' => 'occupied']);
         }
     }
+
+    /**
+     * Update order status and handle side effects (e.g. table status).
+     */
+    public function updateStatus(Order $order, string $status)
+    {
+        return DB::transaction(function () use ($order, $status) {
+            $order->update(['status' => $status]);
+
+            // Release table if completed or cancelled
+            if (in_array($status, ['completed', 'cancelled']) && $order->table_id) {
+                Table::where('id', $order->table_id)->update(['status' => 'available']);
+            } elseif ($order->order_type === 'dine_in' && $order->table_id && in_array($status, ['pending', 'preparing', 'ready'])) {
+                Table::where('id', $order->table_id)->update(['status' => 'occupied']);
+            }
+
+            return $order;
+        });
+    }
+
+    /**
+     * Delete an order and release table if occupied.
+     */
+    public function deleteOrder(Order $order)
+    {
+        DB::transaction(function () use ($order) {
+            if ($order->order_type === 'dine_in' && $order->table_id) {
+                Table::where('id', $order->table_id)->update(['status' => 'available']);
+            }
+            $order->delete();
+        });
+    }
 }

@@ -11,6 +11,8 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Http\Requests\StoreOrderRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
@@ -70,6 +72,25 @@ class OrderController extends Controller
     }
 
     /**
+     * Show the dedicated POS checkout/payment page.
+     */
+    public function checkout(Request $request)
+    {
+        $existingOrder = null;
+        if ($request->has('order_id')) {
+            $existingOrder = Order::with('items.menuItem')->find($request->order_id);
+            if ($existingOrder && $existingOrder->status === 'completed') {
+                return redirect()->route('orders.show', $existingOrder->id)->with('error', 'This order is already completed.');
+            }
+        }
+
+        $tables = Table::all();
+        $customers = Customer::all();
+
+        return view('admin.orders.checkout_page', compact('existingOrder', 'tables', 'customers'));
+    }
+
+    /**
      * Store a newly created order.
      */
     public function store(StoreOrderRequest $request)
@@ -88,10 +109,15 @@ class OrderController extends Controller
 
             return redirect()->route('orders.index')->with('success', 'Order processed successfully!');
         } catch (\Exception $e) {
+            Log::error('Order Store Failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'payload' => $request->all()
+            ]);
+
             if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+                return response()->json(['success' => false, 'message' => 'Order processing failed: ' . $e->getMessage()], 500);
             }
-            return redirect()->back()->with('error', 'Order processing failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Order processing failed: ' . $e->getMessage());
         }
     }
 
@@ -108,7 +134,41 @@ class OrderController extends Controller
         $existingOrder = $order->load('items.menuItem');
         $initialCart = $this->mapOrderToCart($existingOrder);
         
-        return view('admin.orders.checkout', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
+        return view('admin.orders.edit', compact('menuItems', 'tables', 'customers', 'categories', 'existingOrder', 'initialCart'));
+    }
+
+    /**
+     * Update the specified order in storage.
+     */
+    public function update(StoreOrderRequest $request, Order $order)
+    {
+        try {
+            $data = $request->validated();
+            $data['order_id'] = $order->id; // Enforce route parameter order_id
+
+            $updatedOrder = $this->orderService->processOrder($data);
+            
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order updated successfully!',
+                    'order_id' => $updatedOrder->id,
+                    'order' => $updatedOrder
+                ]);
+            }
+
+            return redirect()->route('orders.index')->with('success', 'Order updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('Order Update Failed for ID ' . $order->id . ': ' . $e->getMessage(), [
+                'exception' => $e,
+                'payload' => $request->all()
+            ]);
+
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Order update failed: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->withInput()->with('error', 'Order update failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -130,12 +190,7 @@ class OrderController extends Controller
             'status' => 'required|in:pending,preparing,ready,completed,cancelled',
         ]);
 
-        $order->update(['status' => $request->status]);
-
-        // Release table if completed or cancelled
-        if (in_array($request->status, ['completed', 'cancelled']) && $order->table_id) {
-            $order->diningTable->update(['status' => 'available']);
-        }
+        $this->orderService->updateStatus($order, $request->status);
 
         return redirect()->back()->with('success', 'Order status updated to ' . ucfirst($request->status));
     }
@@ -145,7 +200,7 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        $order->delete();
+        $this->orderService->deleteOrder($order);
         return redirect()->route('orders.index')->with('success', 'Order deleted successfully!');
     }
 
